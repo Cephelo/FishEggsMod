@@ -4,55 +4,86 @@ import dev.cephelo.fisheggs.Config;
 import dev.cephelo.fisheggs.FishEggsMod;
 import dev.cephelo.fisheggs.attachment.FishDataAttachments;
 import dev.cephelo.fisheggs.item.ModItems;
+import dev.cephelo.fisheggs.sound.ModSounds;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.entity.ai.targeting.TargetingConditions;
+import net.minecraft.world.entity.animal.AbstractFish;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nullable;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.function.Predicate;
+import java.util.Optional;
 
 // Adapted from TemptGoal
 public class SeekFishFoodGoal extends Goal {
-    //private static final TargetingConditions TEMP_TARGETING = TargetingConditions.forNonCombat().range((double)10.0F).ignoreLineOfSight();
-    //private final TargetingConditions targetingConditions;
     protected final PathfinderMob mob;
     private final double speedModifier;
-    private double px;
-    private double py;
-    private double pz;
     private double pRotX;
-    private double pRotY;
     @Nullable
     protected ItemEntity item;
     private int calmDown;
-    //private final Predicate<ItemStack> items;
     private final double range;
 
     public SeekFishFoodGoal(PathfinderMob mob, double speedModifier) {
         this.mob = mob;
         this.speedModifier = speedModifier;
-        //this.items = items;
         this.setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
-        //this.targetingConditions = TEMP_TARGETING.copy().selector(this::shouldFollow);
         this.range = Config.FOOD_SEARCH_RANGE.get();
     }
 
-//    private boolean shouldFollow(LivingEntity entity) {
-//        return this.items.test(entity.getMainHandItem()) || this.items.test(entity.getOffhandItem());
-//    }
+    private ItemStack getFoodStack(ItemEntity input) {
+        if (!Config.FISH_IDS.get().isEmpty() && !Config.FOOD_TAGS.get().isEmpty()) {
+
+            for (int i = 0; i < Config.FISH_IDS.get().size(); i++) {
+                Optional<EntityType<?>> oFish = EntityType.byString(Config.FISH_IDS.get().get(i));
+
+                if (oFish.isPresent() && this.mob.getType() == oFish.get()) {
+                    TagKey<Item> key = TagKey.create(Registries.ITEM,
+                            ResourceLocation.parse(Config.FOOD_TAGS.get().get(Math.min(i, Config.FOOD_TAGS.get().size()-1)))
+                    );
+
+                    if (input.getItem().is(key)) {
+                        return input.getItem();
+                    }
+                }
+            }
+
+            // if fish type not in FISH_IDS
+            if (!Config.FISH_IDS.get().contains(this.mob.getType().toString())) {
+                TagKey<Item> fishfoodKey = TagKey.create(Registries.ITEM, ResourceLocation.parse("fisheggs:fish_food"));
+                if (input.getItem().is(fishfoodKey)) {
+                    return input.getItem();
+                }
+            }
+
+        } else { // either list is empty
+            TagKey<Item> fishfoodKey = TagKey.create(Registries.ITEM, ResourceLocation.parse("fisheggs:fish_food"));
+            if (input.getItem().is(fishfoodKey)) {
+                return input.getItem();
+            }
+        }
+
+        return ItemStack.EMPTY;
+    }
 
     // THIS IS YOINKED NEED TO REMAKE
     private ItemEntity findClosestFood() {
         List<ItemEntity> entities = this.mob.level().getEntitiesOfClass(
                 ItemEntity.class, this.mob.getBoundingBox().inflate(this.range),
-                itemEntity -> ItemStack.matches(itemEntity.getItem(), ModItems.FISH_FOOD.toStack()));
+                itemEntity -> ItemStack.isSameItem(itemEntity.getItem(), getFoodStack(itemEntity)));
 
         ItemEntity food = null;
         double closedSquareDistance = this.range * this.range;
@@ -84,32 +115,14 @@ public class SeekFishFoodGoal extends Goal {
     }
 
     public boolean canContinueToUse() {
-        if (this.item != null) {
-            if (this.mob.distanceToSqr(this.item) < this.range * this.range) {
-                if (Math.abs(this.item.getXRot() - this.pRotX) > 5.0){
-                    return false;
-                }
-            } else {
-                this.px = this.item.getX();
-                this.py = this.item.getY();
-                this.pz = this.item.getZ();
-            }
-
-            this.pRotX = this.item.getXRot();
-            this.pRotY = this.item.getYRot();
-        }
-
         return canUse();
     }
 
     public void start() {
         if (cannotEat()) stop();
-        else if (this.item != null) {
-            //FishEggsMod.LOGGER.info("begin seek");
-            this.px = this.item.getX();
-            this.py = this.item.getY();
-            this.pz = this.item.getZ();
-        }
+//        else if (this.item != null) {
+//            FishEggsMod.LOGGER.info("begin seek");
+//        }
     }
 
     public void stop() {
@@ -129,13 +142,14 @@ public class SeekFishFoodGoal extends Goal {
 
         //FishEggsMod.LOGGER.info("distsqr {}", this.mob.distanceToSqr(this.item));
         this.mob.getLookControl().setLookAt(this.item, this.mob.getMaxHeadYRot(), this.mob.getMaxHeadXRot());
-        if (this.mob.distanceToSqr(this.item) < 0.6) {
+        if (this.mob.distanceToSqr(this.item) < 0.75) { // 0.6
             this.mob.getNavigation().stop();
             if (this.mob.getData(FishDataAttachments.FISHINLOVE) == 0) {
                 this.item.getItem().shrink(1);
                 this.mob.setData(FishDataAttachments.FISHINLOVE, Config.LOVE_TIME.get());
                 // particle indicator
                 this.mob.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, Config.LOVE_TIME.get()));
+                this.mob.level().playSound(null, this.mob.getOnPos(), ModSounds.FISH_EATS.get(), SoundSource.NEUTRAL);
             }
         } else {
             this.mob.getNavigation().moveTo(this.item, this.speedModifier);

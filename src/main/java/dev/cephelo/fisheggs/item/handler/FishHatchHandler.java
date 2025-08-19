@@ -4,8 +4,10 @@ import dev.cephelo.fisheggs.Config;
 import dev.cephelo.fisheggs.FishEggsMod;
 import dev.cephelo.fisheggs.attachment.FishDataAttachments;
 import dev.cephelo.fisheggs.item.component.FishEggComponents;
+import dev.cephelo.fisheggs.sound.ModSounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.MobSpawnType;
@@ -132,7 +134,7 @@ public class FishHatchHandler {
     }
 
     // from TropicalFish
-    static int packVariant(TropicalFish.Pattern pattern, DyeColor baseColor, DyeColor patternColor) {
+    private static int packVariant(TropicalFish.Pattern pattern, DyeColor baseColor, DyeColor patternColor) {
         return pattern.getPackedId() & '\uffff' | (baseColor.getId() & 255) << 16 | (patternColor.getId() & 255) << 24;
     }
 
@@ -152,6 +154,7 @@ public class FishHatchHandler {
                 }
             }
         }
-        // play squish sound
+
+        level.playSound(null, pos, ModSounds.EGGS_HATCH.get(), SoundSource.NEUTRAL);
     }
 }

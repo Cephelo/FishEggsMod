@@ -1,0 +1,29 @@
+{
+  "parent": "minecraft:husbandry/fishy_business",
+  "criteria": {
+    "eat_eggs": {
+      "trigger": "minecraft:consume_item",
+      "conditions": {
+        "items": [{
+            "items": "fisheggs:fish_eggs"
+          }]
+      }
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.fisheggs.caviar.desc"
+    },
+    "icon": {
+      "id": "fisheggs:fish_eggs"
+    },
+    "title": {
+      "translate": "advancements.fisheggs.caviar.title"
+    }
+  },
+  "requirements": [
+    [
+      "eat_eggs"
+    ]
+  ]
+}

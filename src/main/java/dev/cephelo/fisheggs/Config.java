@@ -54,6 +54,19 @@ public class Config {
             .comment("\n Whether tropical fish that hatch out of the same egg clutch should be identical")
             .define("tropicalSinglePattern", true);
 
+    public static final ModConfigSpec.ConfigValue<List<? extends String>> FISH_IDS = BUILDER
+            .comment("List of Entity IDs - each entry corresponds with the entry of fishFood_itemTags with the same index." +
+                    "\n   If entry index is greater than fishFood_itemTags length, will retrieve last entry in fishFood_itemTags. \n" +
+                    "\n   Must be instance of AbstractFish.  If an entity ID is not defined here, the default tag fisheggs:fish_food will be used." +
+                    "\n   If this list is empty, the tag fisheggs:fish_food will be used by default.")
+            .defineListAllowEmpty("fishFood_fishIDs", List.of("minecraft:cod", "minecraft:salmon"), () -> "", Config::validateEntityType);
+
+    public static final ModConfigSpec.ConfigValue<List<? extends String>> FOOD_TAGS = BUILDER
+            .comment("List of item tags - each entry corresponds with the entry of fishFood_fishIDs with the same index." +
+                    "\n   If entry index is greater than fishFood_fishIDs length, will retrieve last entry in fishFood_fishIDs." +
+                    "\n   If this list is empty, the tag fisheggs:fish_food will be used by default.")
+            .defineListAllowEmpty("fishFood_itemTags", List.of("fisheggs:fish_food"), () -> "", Config::alwaysTrue);
+
     public static final ModConfigSpec.ConfigValue<String> MAGIC_NUMBER_INTRODUCTION = BUILDER
             .comment("What you want the introduction message to be for the magic number")
             .define("magicNumberIntroduction", "The magic number is... ");
@@ -64,6 +77,14 @@ public class Config {
             .defineListAllowEmpty("items", List.of("minecraft:iron_ingot"), () -> "", Config::validateItemName);
 
     static final ModConfigSpec SPEC = BUILDER.build();
+
+    private static boolean validateEntityType(final Object obj) {
+        return obj instanceof String et && BuiltInRegistries.ENTITY_TYPE.containsKey(ResourceLocation.parse(et));
+    }
+
+    private static boolean alwaysTrue(final Object obj) {
+        return true;
+    }
 
     private static boolean validateItemName(final Object obj) {
         return obj instanceof String itemName && BuiltInRegistries.ITEM.containsKey(ResourceLocation.parse(itemName));

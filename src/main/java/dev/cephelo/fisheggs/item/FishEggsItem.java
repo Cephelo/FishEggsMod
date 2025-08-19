@@ -25,7 +25,7 @@ public class FishEggsItem extends Item {
 
     @Override
     public @Nullable Entity createEntity(Level level, Entity location, ItemStack stack) {
-        return new FishEggsItemEntity(level, location.getX(), location.getY(), location.getZ(), stack,
+        return new FishEggsItemEntity(level, location.getX(), location.getY(), location.getZ(), location.getDeltaMovement(), stack, 40,
                 Objects.requireNonNull(stack.get(ModDataComponents.FE_COMP)).type(),
                 Objects.requireNonNull(stack.get(ModDataComponents.FE_COMP)).variant1(),
                 Objects.requireNonNull(stack.get(ModDataComponents.FE_COMP)).variant2());

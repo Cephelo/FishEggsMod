@@ -1,18 +1,19 @@
 package dev.cephelo.fisheggs.entity.ai.goal;
 
 import dev.cephelo.fisheggs.Config;
-import dev.cephelo.fisheggs.FishEggsMod;
 import dev.cephelo.fisheggs.attachment.FishDataAttachments;
 import dev.cephelo.fisheggs.item.FishEggsItemEntity;
 import dev.cephelo.fisheggs.item.ModItems;
-import net.minecraft.server.level.ServerLevel;
+import dev.cephelo.fisheggs.sound.ModSounds;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.animal.AbstractFish;
-import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.animal.TropicalFish;
+import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
@@ -103,20 +104,26 @@ public class FishBreedGoal extends Goal {
 
     protected void breed() {
         this.level.addFreshEntity(new FishEggsItemEntity(level, this.animal.getX(), this.animal.getY(), this.animal.getZ(),
-                ModItems.FISH_EGGS.toStack(), this.animal.getType(),
+                ModItems.FISH_EGGS.toStack(), 20, this.animal.getType(),
                  this.animal instanceof TropicalFish fish ? fish.getPackedVariant() : 0,
                 this.partner instanceof TropicalFish fish ? fish.getPackedVariant() : 0));
 
         this.animal.setData(FishDataAttachments.FISHINLOVE, 0);
         this.animal.setData(FishDataAttachments.BREED_COOLDOWN, Config.BREED_COOLDOWN_TIME.get());
         this.animal.addEffect(new MobEffectInstance(MobEffects.REGENERATION, Config.REGEN_TIME.get()));
-        this.animal.removeEffect(MobEffects.NIGHT_VISION);
+        this.animal.removeEffect(MobEffects.NIGHT_VISION); // remove inLove particle indicator
 
         if (this.partner != null) {
             this.partner.setData(FishDataAttachments.FISHINLOVE, 0);
             this.partner.setData(FishDataAttachments.BREED_COOLDOWN, Config.BREED_COOLDOWN_TIME.get());
             this.partner.addEffect(new MobEffectInstance(MobEffects.REGENERATION, Config.REGEN_TIME.get()));
-            this.partner.removeEffect(MobEffects.NIGHT_VISION);
+            this.partner.removeEffect(MobEffects.NIGHT_VISION); // remove inLove particle indicator
         }
+
+        if (level.getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT)) {
+            level.addFreshEntity(new ExperienceOrb(level, this.animal.getX(), this.animal.getY(), this.animal.getZ(), level.getRandom().nextInt(4) + 1));
+        }
+
+        level.playSound(null, this.animal.getOnPos(), ModSounds.FISH_BREEDS.get(), SoundSource.NEUTRAL);
     }
 }

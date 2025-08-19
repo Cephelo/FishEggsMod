@@ -1,4 +1,9 @@
 {
   "item.fisheggs.fish_eggs": "Fish Eggs",
-  "item.fisheggs.fish_food": "Fish Food"
+  "item.fisheggs.fish_food": "Fish Food",
+  "sounds.fisheggs.fish_breeds": "Fish lays eggs",
+  "sounds.fisheggs.fish_eats": "Fish eats",
+  "sounds.fisheggs.eggs_hatch": "Fish Eggs hatch",
+  "advancements.fisheggs.caviar.title": "Caviar?",
+  "advancements.fisheggs.caviar.desc": "Eat some Fish Eggs"
 }

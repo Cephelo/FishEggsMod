@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+  	  "item": "fisheggs:fish_eggs"
+  	},
+    {
+  	  "item": "fisheggs:fish_eggs"
+  	},
+    {
+  	  "item": "fisheggs:fish_eggs"
+  	},
+    {
+  	  "item": "fisheggs:fish_eggs"
+  	}
+  ],
+  "result": {
+    "id": "minecraft:slime_ball"
+  }
+}

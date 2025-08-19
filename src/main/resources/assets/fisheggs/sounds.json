@@ -1,0 +1,35 @@
+{
+  "fish_breeds": {
+    "subtitle": "sounds.fisheggs.fish_breeds",
+    "sounds": [
+      {
+        "name": "entity.cod.hurt",
+        "type": "event",
+        "pitch": 1.25,
+        "volume": 0.25
+      }
+    ]
+  },
+  "fish_eats": {
+    "subtitle": "sounds.fisheggs.fish_eats",
+    "sounds": [
+      {
+        "name": "entity.generic.eat",
+        "type": "event",
+        "pitch": 1.75,
+        "volume": 0.25
+      }
+    ]
+  },
+  "eggs_hatch": {
+    "subtitle": "sounds.fisheggs.eggs_hatch",
+    "sounds": [
+      {
+        "name": "entity.turtle.egg_crack",
+        "type": "event",
+        "pitch": 2,
+        "volume": 0.5
+      }
+    ]
+  }
+}
