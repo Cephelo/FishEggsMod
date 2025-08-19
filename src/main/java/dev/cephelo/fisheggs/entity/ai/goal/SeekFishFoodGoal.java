@@ -1,0 +1,145 @@
+package dev.cephelo.fisheggs.entity.ai.goal;
+
+import dev.cephelo.fisheggs.Config;
+import dev.cephelo.fisheggs.FishEggsMod;
+import dev.cephelo.fisheggs.attachment.FishDataAttachments;
+import dev.cephelo.fisheggs.item.ModItems;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.PathfinderMob;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.ai.targeting.TargetingConditions;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.ItemStack;
+
+import javax.annotation.Nullable;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.function.Predicate;
+
+// Adapted from TemptGoal
+public class SeekFishFoodGoal extends Goal {
+    //private static final TargetingConditions TEMP_TARGETING = TargetingConditions.forNonCombat().range((double)10.0F).ignoreLineOfSight();
+    //private final TargetingConditions targetingConditions;
+    protected final PathfinderMob mob;
+    private final double speedModifier;
+    private double px;
+    private double py;
+    private double pz;
+    private double pRotX;
+    private double pRotY;
+    @Nullable
+    protected ItemEntity item;
+    private int calmDown;
+    //private final Predicate<ItemStack> items;
+    private final double range;
+
+    public SeekFishFoodGoal(PathfinderMob mob, double speedModifier) {
+        this.mob = mob;
+        this.speedModifier = speedModifier;
+        //this.items = items;
+        this.setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
+        //this.targetingConditions = TEMP_TARGETING.copy().selector(this::shouldFollow);
+        this.range = Config.FOOD_SEARCH_RANGE.get();
+    }
+
+//    private boolean shouldFollow(LivingEntity entity) {
+//        return this.items.test(entity.getMainHandItem()) || this.items.test(entity.getOffhandItem());
+//    }
+
+    // THIS IS YOINKED NEED TO REMAKE
+    private ItemEntity findClosestFood() {
+        List<ItemEntity> entities = this.mob.level().getEntitiesOfClass(
+                ItemEntity.class, this.mob.getBoundingBox().inflate(this.range),
+                itemEntity -> ItemStack.matches(itemEntity.getItem(), ModItems.FISH_FOOD.toStack()));
+
+        ItemEntity food = null;
+        double closedSquareDistance = this.range * this.range;
+        for (ItemEntity itemEntity : entities) {
+            double distance = this.mob.distanceToSqr(itemEntity);
+            if (distance < closedSquareDistance) {
+                food = itemEntity;
+                closedSquareDistance = distance;
+            }
+        }
+        return food;
+    }
+
+    private boolean cannotEat() {
+        return this.mob.getData(FishDataAttachments.FISHINLOVE) > 0 || this.mob.getData(FishDataAttachments.BREED_COOLDOWN) > 0;
+    }
+
+    @Override
+    public boolean canUse() {
+        if (cannotEat()) return false;
+
+        if (this.calmDown > 0) {
+            --this.calmDown;
+            return false;
+        } else {
+            this.item = this.findClosestFood();
+            return this.item != null;
+        }
+    }
+
+    public boolean canContinueToUse() {
+        if (this.item != null) {
+            if (this.mob.distanceToSqr(this.item) < this.range * this.range) {
+                if (Math.abs(this.item.getXRot() - this.pRotX) > 5.0){
+                    return false;
+                }
+            } else {
+                this.px = this.item.getX();
+                this.py = this.item.getY();
+                this.pz = this.item.getZ();
+            }
+
+            this.pRotX = this.item.getXRot();
+            this.pRotY = this.item.getYRot();
+        }
+
+        return canUse();
+    }
+
+    public void start() {
+        if (cannotEat()) stop();
+        else if (this.item != null) {
+            //FishEggsMod.LOGGER.info("begin seek");
+            this.px = this.item.getX();
+            this.py = this.item.getY();
+            this.pz = this.item.getZ();
+        }
+    }
+
+    public void stop() {
+        //FishEggsMod.LOGGER.info("stop seek");
+        this.item = null;
+        this.mob.getNavigation().stop();
+        this.calmDown = reducedTickDelay(Config.CALM_DOWN_TIME.get());
+    }
+
+    @Override
+    public boolean requiresUpdateEveryTick() {
+        return true;
+    }
+
+    public void tick() {
+        if (this.item == null) return;
+
+        //FishEggsMod.LOGGER.info("distsqr {}", this.mob.distanceToSqr(this.item));
+        this.mob.getLookControl().setLookAt(this.item, this.mob.getMaxHeadYRot(), this.mob.getMaxHeadXRot());
+        if (this.mob.distanceToSqr(this.item) < 0.6) {
+            this.mob.getNavigation().stop();
+            if (this.mob.getData(FishDataAttachments.FISHINLOVE) == 0) {
+                this.item.getItem().shrink(1);
+                this.mob.setData(FishDataAttachments.FISHINLOVE, Config.LOVE_TIME.get());
+                // particle indicator
+                this.mob.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, Config.LOVE_TIME.get()));
+            }
+        } else {
+            this.mob.getNavigation().moveTo(this.item, this.speedModifier);
+        }
+
+    }
+}
