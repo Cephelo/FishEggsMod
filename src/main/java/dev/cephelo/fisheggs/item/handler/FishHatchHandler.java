@@ -10,6 +10,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.animal.TropicalFish;
 import net.minecraft.world.item.DyeColor;
@@ -134,17 +135,21 @@ public class FishHatchHandler {
     }
 
     // from TropicalFish
-    private static int packVariant(TropicalFish.Pattern pattern, DyeColor baseColor, DyeColor patternColor) {
+    public static int packVariant(TropicalFish.Pattern pattern, DyeColor baseColor, DyeColor patternColor) {
         return pattern.getPackedId() & '\uffff' | (baseColor.getId() & 255) << 16 | (patternColor.getId() & 255) << 24;
     }
 
     public static void spawnFish(ServerLevel level, BlockPos pos, FishEggComponents data) {
         int fishPattern = 0;
+
+        // handles null from creative inventory
+        if (data == null) data = new FishEggComponents(EntityType.COD, 0, 0);
+
         if (Config.TROPICAL_SINGLE_PATTERN.get())
             fishPattern = getPattern(data.variant1(), data.variant2());
 
-        for (int j = 0; j < Mth.randomBetweenInclusive(level.random, 1, 3); j++) {
-            Entity thing = data.type().spawn(level, pos, MobSpawnType.SPAWN_EGG);
+        for (int j = 0; j < Mth.randomBetweenInclusive(level.random, 1, Config.MAX_FISH_FROM_EGGS.get()); j++) {
+            Entity thing = data.type().spawn(level, pos, MobSpawnType.BUCKET);
             if (thing != null) {
                 thing.setData(FishDataAttachments.BREED_COOLDOWN, Config.HATCH_BREED_COOLDOWN_TIME.get());
                 if (thing instanceof TropicalFish fish) {

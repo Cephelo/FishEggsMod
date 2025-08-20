@@ -1,6 +1,7 @@
 package dev.cephelo.fisheggs.entity.ai.goal;
 
 import dev.cephelo.fisheggs.Config;
+import dev.cephelo.fisheggs.FishEggsMod;
 import dev.cephelo.fisheggs.attachment.FishDataAttachments;
 import dev.cephelo.fisheggs.item.FishEggsItemEntity;
 import dev.cephelo.fisheggs.item.ModItems;
@@ -22,7 +23,7 @@ import java.util.List;
 
 // Adapted from BreedGoal
 public class FishBreedGoal extends Goal {
-    private static final TargetingConditions PARTNER_TARGETING = TargetingConditions.forNonCombat().range(8.0).ignoreLineOfSight();
+    private static final TargetingConditions PARTNER_TARGETING = TargetingConditions.forNonCombat().range(Config.MATE_SEARCH_RANGE.get()).ignoreLineOfSight();
     protected final AbstractFish animal;
     private final Class<? extends AbstractFish> partnerClass;
     protected final Level level;
@@ -63,12 +64,13 @@ public class FishBreedGoal extends Goal {
     }
 
     public void tick() {
-        if (this.partner == null) return;
+        if (this.partner == null || SeekFishFoodGoal.blacklistContains(this.animal.getType())) return;
 
         this.animal.getLookControl().setLookAt(this.partner, 10.0F, (float)this.animal.getMaxHeadXRot());
         this.animal.getNavigation().moveTo(this.partner, this.speedModifier);
         ++this.loveTime;
-        if (this.loveTime >= this.adjustedTickDelay(40) && this.animal.distanceToSqr(this.partner) < 1.0) {
+        //FishEggsMod.LOGGER.info("distsqrB {}", this.animal.distanceToSqr(this.partner));
+        if (this.loveTime >= this.adjustedTickDelay(40) && this.animal.distanceToSqr(this.partner) < Config.DIST_BREED.get()) {
             if (canUse()) this.breed();
         }
 
@@ -76,7 +78,7 @@ public class FishBreedGoal extends Goal {
 
     @Nullable
     private AbstractFish getFreePartner() {
-        List<? extends AbstractFish> list = this.level.getNearbyEntities(this.partnerClass, PARTNER_TARGETING, this.animal, this.animal.getBoundingBox().inflate(8.0F));
+        List<? extends AbstractFish> list = this.level.getNearbyEntities(this.partnerClass, PARTNER_TARGETING, this.animal, this.animal.getBoundingBox().inflate(Config.MATE_SEARCH_RANGE.get()));
         double d0 = Double.MAX_VALUE;
         AbstractFish animal = null;
 
@@ -120,8 +122,8 @@ public class FishBreedGoal extends Goal {
             this.partner.removeEffect(MobEffects.NIGHT_VISION); // remove inLove particle indicator
         }
 
-        if (level.getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT)) {
-            level.addFreshEntity(new ExperienceOrb(level, this.animal.getX(), this.animal.getY(), this.animal.getZ(), level.getRandom().nextInt(4) + 1));
+        if (level.getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT) && Config.FISH_BREEDING_XP.get() != 0) {
+            level.addFreshEntity(new ExperienceOrb(level, this.animal.getX(), this.animal.getY(), this.animal.getZ(), level.getRandom().nextInt(Config.FISH_BREEDING_XP.get() - 1) + 1));
         }
 
         level.playSound(null, this.animal.getOnPos(), ModSounds.FISH_BREEDS.get(), SoundSource.NEUTRAL);

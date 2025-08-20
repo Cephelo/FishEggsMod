@@ -1,9 +1,11 @@
 {
   "item.fisheggs.fish_eggs": "Fish Eggs",
   "item.fisheggs.fish_food": "Fish Food",
+  "item.fisheggs.wand": "Fish Eggs Duplication Wand",
   "sounds.fisheggs.fish_breeds": "Fish lays eggs",
   "sounds.fisheggs.fish_eats": "Fish eats",
   "sounds.fisheggs.eggs_hatch": "Fish Eggs hatch",
+  "tooltip.fisheggs.wand": "Right click with Fish Eggs in offhand to duplicate!",
   "advancements.fisheggs.caviar.title": "Caviar?",
   "advancements.fisheggs.caviar.desc": "Eat some Fish Eggs"
 }

@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "fisheggs:fish_eggs"
+        }
+      ],
+      "rolls": {
+        "type": "minecraft:constant",
+        "value": 1.0
+      }
+    }
+  ],
+  "random_sequence": "minecraft:chests/underwater_ruin_small"
+}

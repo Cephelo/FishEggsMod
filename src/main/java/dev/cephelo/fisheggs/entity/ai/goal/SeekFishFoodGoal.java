@@ -3,12 +3,8 @@ package dev.cephelo.fisheggs.entity.ai.goal;
 import dev.cephelo.fisheggs.Config;
 import dev.cephelo.fisheggs.FishEggsMod;
 import dev.cephelo.fisheggs.attachment.FishDataAttachments;
-import dev.cephelo.fisheggs.item.ModItems;
 import dev.cephelo.fisheggs.sound.ModSounds;
-import net.minecraft.core.Registry;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.TagKey;
@@ -17,7 +13,6 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.entity.animal.AbstractFish;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -31,7 +26,6 @@ import java.util.Optional;
 public class SeekFishFoodGoal extends Goal {
     protected final PathfinderMob mob;
     private final double speedModifier;
-    private double pRotX;
     @Nullable
     protected ItemEntity item;
     private int calmDown;
@@ -62,7 +56,7 @@ public class SeekFishFoodGoal extends Goal {
             }
 
             // if fish type not in FISH_IDS
-            if (!Config.FISH_IDS.get().contains(this.mob.getType().toString())) {
+            if (!Config.FISH_IDS.get().contains(EntityType.getKey(this.mob.getType()).toString())) {
                 TagKey<Item> fishfoodKey = TagKey.create(Registries.ITEM, ResourceLocation.parse("fisheggs:fish_food"));
                 if (input.getItem().is(fishfoodKey)) {
                     return input.getItem();
@@ -80,7 +74,7 @@ public class SeekFishFoodGoal extends Goal {
     }
 
     // THIS IS YOINKED NEED TO REMAKE
-    private ItemEntity findClosestFood() {
+    private ItemEntity findNearestFood() {
         List<ItemEntity> entities = this.mob.level().getEntitiesOfClass(
                 ItemEntity.class, this.mob.getBoundingBox().inflate(this.range),
                 itemEntity -> ItemStack.isSameItem(itemEntity.getItem(), getFoodStack(itemEntity)));
@@ -97,7 +91,14 @@ public class SeekFishFoodGoal extends Goal {
         return food;
     }
 
+    public static boolean blacklistContains(EntityType type) {
+        return Config.FISH_BLACKLIST.get().contains(EntityType.getKey(type).toString())
+                == !Config.FISH_BLACKLIST_IS_WHITELIST.get();
+    }
+
     private boolean cannotEat() {
+        //FishEggsMod.LOGGER.info("id {}, match {}, list {}", EntityType.getKey(this.mob.getType()).toString(), blacklistContains(this.mob.getType()), Config.FISH_BLACKLIST.get());
+        if (blacklistContains(this.mob.getType())) return true;
         return this.mob.getData(FishDataAttachments.FISHINLOVE) > 0 || this.mob.getData(FishDataAttachments.BREED_COOLDOWN) > 0;
     }
 
@@ -109,7 +110,7 @@ public class SeekFishFoodGoal extends Goal {
             --this.calmDown;
             return false;
         } else {
-            this.item = this.findClosestFood();
+            this.item = this.findNearestFood();
             return this.item != null;
         }
     }
@@ -140,9 +141,9 @@ public class SeekFishFoodGoal extends Goal {
     public void tick() {
         if (this.item == null) return;
 
-        //FishEggsMod.LOGGER.info("distsqr {}", this.mob.distanceToSqr(this.item));
+        //FishEggsMod.LOGGER.info("distsqrF {}", this.mob.distanceToSqr(this.item));
         this.mob.getLookControl().setLookAt(this.item, this.mob.getMaxHeadYRot(), this.mob.getMaxHeadXRot());
-        if (this.mob.distanceToSqr(this.item) < 0.75) { // 0.6
+        if (this.mob.distanceToSqr(this.item) < Config.DIST_FOOD.get()) { // 0.75 // 0.6
             this.mob.getNavigation().stop();
             if (this.mob.getData(FishDataAttachments.FISHINLOVE) == 0) {
                 this.item.getItem().shrink(1);
