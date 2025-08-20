@@ -15,7 +15,7 @@ import net.neoforged.neoforge.event.EventHooks;
 
 public class FishEggsItemEntity extends ItemEntity {
     public FishEggsItemEntity(Level level, double posX, double posY, double posZ, ItemStack itemStack, int pickupDelay, EntityType fish, int variant1, int variant2) {
-        this(level, posX, posY, posZ, new Vec3(level.random.nextDouble() * 0.2 - 0.1, -0.1, level.random.nextDouble() * 0.2 - 0.1), itemStack, pickupDelay, fish, variant1, variant2);
+        this(level, posX, posY, posZ, new Vec3(level.random.nextDouble() * 0.2 - 0.05, -0.1, level.random.nextDouble() * 0.2 - 0.1), itemStack, pickupDelay, fish, variant1, variant2);
     }
 
     public FishEggsItemEntity(Level level, double posX, double posY, double posZ, Vec3 delta, ItemStack itemStack, int pickupDelay, EntityType fish, int variant1, int variant2) {

@@ -73,7 +73,7 @@ public class SeekFishFoodGoal extends Goal {
         return ItemStack.EMPTY;
     }
 
-    // THIS IS YOINKED NEED TO REMAKE
+    // Thank you maxvar
     private ItemEntity findNearestFood() {
         List<ItemEntity> entities = this.mob.level().getEntitiesOfClass(
                 ItemEntity.class, this.mob.getBoundingBox().inflate(this.range),
@@ -144,10 +144,11 @@ public class SeekFishFoodGoal extends Goal {
         //FishEggsMod.LOGGER.info("distsqrF {}", this.mob.distanceToSqr(this.item));
         this.mob.getLookControl().setLookAt(this.item, this.mob.getMaxHeadYRot(), this.mob.getMaxHeadXRot());
         if (this.mob.distanceToSqr(this.item) < Config.DIST_FOOD.get()) { // 0.75 // 0.6
-            this.mob.getNavigation().stop();
-            if (this.mob.getData(FishDataAttachments.FISHINLOVE) == 0) {
+            if (this.item.getItem().getCount() > 0 && this.mob.getData(FishDataAttachments.FISHINLOVE) == 0) {
                 this.item.getItem().shrink(1);
                 this.mob.setData(FishDataAttachments.FISHINLOVE, Config.LOVE_TIME.get());
+                this.mob.getNavigation().stop();
+
                 // particle indicator
                 this.mob.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, Config.LOVE_TIME.get()));
                 this.mob.level().playSound(null, this.mob.getOnPos(), ModSounds.FISH_EATS.get(), SoundSource.NEUTRAL);

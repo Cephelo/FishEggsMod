@@ -1,5 +1,6 @@
 package dev.cephelo.fisheggs;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -9,6 +10,8 @@ import net.neoforged.neoforge.common.ModConfigSpec;
 
 public class Config {
     private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
+    private static final List<String> minecraftColors = Arrays.asList("white", "orange", "magenta", "light_blue",
+            "yellow", "lime", "pink", "gray", "light_gray", "cyan", "purple", "blue", "brown", "green", "red", "black");
 
     public static final ModConfigSpec.DoubleValue FOOD_SEARCH_RANGE = BUILDER
             .comment("\n The range a fish will hunt for food")
@@ -24,15 +27,15 @@ public class Config {
 
     public static final ModConfigSpec.DoubleValue DIST_BREED = BUILDER
             .comment("\n The maximum squared distance a fish can breed with their partner")
-            .defineInRange("partnerMateRangeSqr", 1.0, 0.0, 64.0);
+            .defineInRange("partnerMateRangeSqr", 1.1, 0.0, 64.0);
 
     public static final ModConfigSpec.IntValue LOVE_TIME = BUILDER
-            .comment("\n Ticks that a fish will be in the love state for")
+            .comment("\n Ticks that a fish will be in the love state for after eating")
             .defineInRange("inLoveTime", 600, 1, Integer.MAX_VALUE);
 
     public static final ModConfigSpec.IntValue REGEN_TIME = BUILDER
             .comment("\n Ticks that a fish will be given regeneration after breeding")
-            .defineInRange("regenTime", 90, 0, Integer.MAX_VALUE);
+            .defineInRange("regenTime", 100, 0, Integer.MAX_VALUE);
 
     public static final ModConfigSpec.IntValue CALM_DOWN_TIME = BUILDER
             .comment("\n Ticks that a fish will ignore food after losing sight of their previous food target")
@@ -111,6 +114,21 @@ public class Config {
             .comment("\n Whether the Fish Eggs item should display the tropical pattern data of the parents")
             .define("showVariantTooltip", true);
 
+    public static final ModConfigSpec.BooleanValue HAS_BRED_DESPAWN = BUILDER
+            .comment("\n Whether (bucketable) fish can despawn if they've bred.  Existing fish will not despawn if set to true.")
+            .define("parentsCanDespawn", false);
+
+    public static final ModConfigSpec.BooleanValue HATCHED_CAN_DESPAWN = BUILDER
+            .comment("\n Whether (bucketable) fish can despawn if they hatch from Fish Eggs.  Existing fish will not despawn if set to true.")
+            .define("hatchedCanDespawn", false);
+
+    public static final ModConfigSpec.ConfigValue<List<? extends String>> COLOR_LIST = BUILDER
+            .comment("\n Color list used in Tropical Fish color mutations.  All strings must match the 16 minecraft colors, or default will be used." +
+                    "\n  Default: [\"white\", \"light_gray\", \"gray\", \"black\", \"brown\", " +
+                    "\"red\", \"orange\", \"yellow\", \"lime\", \"green\", \"cyan\", \"light_blue\", \"blue\", \"purple\", \"magenta\", \"pink\"]")
+            .defineListAllowEmpty("colorMutationList", List.of("white", "light_gray", "gray", "black", "brown",
+                    "red", "orange", "yellow", "lime", "green", "cyan", "light_blue", "blue", "purple", "magenta", "pink"), () -> "", Config::validateColor);
+
     public static final ModConfigSpec.ConfigValue<String> MAGIC_NUMBER_INTRODUCTION = BUILDER
             .comment("What you want the introduction message to be for the magic number")
             .define("magicNumberIntroduction", "The magic number is... ");
@@ -132,5 +150,9 @@ public class Config {
 
     private static boolean validateItemName(final Object obj) {
         return obj instanceof String itemName && BuiltInRegistries.ITEM.containsKey(ResourceLocation.parse(itemName));
+    }
+
+    private static boolean validateColor(final Object obj) {
+        return obj instanceof String color && minecraftColors.contains(color);
     }
 }

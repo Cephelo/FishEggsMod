@@ -76,18 +76,11 @@ public class FishEggsItem extends Item {
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
         FishEggComponents comp = stack.get(ModDataComponents.FE_COMP.get());
         if (comp != null) {
-            MutableComponent tt = Component.empty();
             if (Config.SHOW_TYPE_TOOLTIP.get())
-                tt.append(Component.translatable(comp.type().getDescriptionId()));
+                tooltipComponents.add(Component.translatable(comp.type().getDescriptionId()).withStyle(achatformatting));
 
             if (comp.type() == EntityType.TROPICAL_FISH && Config.SHOW_VARIANT_TOOLTIP.get()) {
-                if (Config.SHOW_TYPE_TOOLTIP.get()) tt.append("\n");
-                tt.append(variantString(comp.variant1()).append(", ").append(variantString(comp.variant2())));
-            }
-
-            if (!tt.equals(Component.empty())) {
-                tt.withStyle(achatformatting);
-                tooltipComponents.add(tt);
+                tooltipComponents.add(variantString(comp.variant1()).append(", ").append(variantString(comp.variant2())).withStyle(achatformatting));
             }
         }
 

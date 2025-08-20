@@ -7,5 +7,7 @@
   "sounds.fisheggs.eggs_hatch": "Fish Eggs hatch",
   "tooltip.fisheggs.wand": "Right click with Fish Eggs in offhand to duplicate!",
   "advancements.fisheggs.caviar.title": "Caviar?",
-  "advancements.fisheggs.caviar.desc": "Eat some Fish Eggs"
+  "advancements.fisheggs.caviar.desc": "Eat some Fish Eggs",
+  "advancements.fisheggs.feed_frog.title": "Pond Rules",
+  "advancements.fisheggs.feed_frog.desc": "Feed a Frog some Fish Eggs"
 }

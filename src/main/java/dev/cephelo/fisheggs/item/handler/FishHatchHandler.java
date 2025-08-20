@@ -12,20 +12,26 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.animal.Bucketable;
 import net.minecraft.world.entity.animal.TropicalFish;
 import net.minecraft.world.item.DyeColor;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class FishHatchHandler {
     private static final Random r = new Random();
 
     // white, light gray, gray, black, brown, red, orange, yellow,
     // lime, green, cyan, light blue, blue, purple, magenta, pink
-    private static final List<Integer> colors = Arrays.asList(0, 8, 7, 15, 12, 14, 1, 4, 5, 13, 9, 3, 11, 10, 2, 6);
+    //private static final List<Integer> colors = Arrays.asList(0, 8, 7, 15, 12, 14, 1, 4, 5, 13, 9, 3, 11, 10, 2, 6);
+    private static final List<String> defaultColors = Arrays.asList("white", "light_gray", "gray", "black", "brown",
+            "red", "orange", "yellow", "lime", "green", "cyan", "light_blue", "blue", "purple", "magenta", "pink");
+    private static final List<String> minecraftColors = Arrays.asList("white", "orange", "magenta", "light_blue",
+            "yellow", "lime", "pink", "gray", "light_gray", "cyan", "purple", "blue", "brown", "green", "red", "black");
+
+    private static final List<? extends String> colors = new HashSet<>(Config.COLOR_LIST.get()).containsAll(minecraftColors) ? Config.COLOR_LIST.get() : defaultColors;
+
+    private static final List<Integer> mutantStyles = Arrays.asList(4, 5, 1, 0, 2, 3);
     private static final List<TropicalFish.Pattern> patterns = Arrays.asList(
             // TropicalFish.Base.SMALL
             TropicalFish.Pattern.KOB, TropicalFish.Pattern.SUNSTREAK, TropicalFish.Pattern.SNOOPER,
@@ -35,24 +41,14 @@ public class FishHatchHandler {
             TropicalFish.Pattern.BETTY, TropicalFish.Pattern.FLOPPER, TropicalFish.Pattern.CLAYFISH
     );
 
-    private static int mutateStyle(int p) {
-        return switch (p) {
-            case 0 -> 4;
-            case 1 -> 5;
-            case 2 -> 1;
-            case 4 -> 2;
-            case 5 -> 3;
-            default -> 0;
-        };
-    }
-
     private static TropicalFish.Pattern mutatePattern(TropicalFish.Pattern pattern1, TropicalFish.Pattern pattern2) {
         TropicalFish.Base size = pattern1.base();
         if (size != pattern2.base() && r.nextInt(2) == 1) size = pattern2.base();
 
         int randomParentStyle = r.nextInt(2) == 1 ? patterns.indexOf(pattern1) : patterns.indexOf(pattern2);
         if (randomParentStyle > 5) randomParentStyle = randomParentStyle - 6;
-        return patterns.get(mutateStyle(randomParentStyle) + (size == TropicalFish.Base.LARGE ? 6 : 0));
+
+        return patterns.get(mutantStyles.get(randomParentStyle) + (size == TropicalFish.Base.LARGE ? 6 : 0));
     }
 
     private static TropicalFish.Pattern choosePattern(int parent1, int parent2) {
@@ -104,29 +100,29 @@ public class FishHatchHandler {
     }
 
     private static DyeColor getRandomColorWithinRange(int variant1, int variant2, int type) {
-        int color1 = colors.indexOf(variant1 >> type & 255);
-        int color2 = colors.indexOf(variant2 >> type & 255);
+        int color1 = colors.indexOf(minecraftColors.get(variant1 >> type & 255));
+        int color2 = colors.indexOf(minecraftColors.get(variant2 >> type & 255));
+        int minColor = Math.min(color1, color2);
+        int maxColor = Math.max(color1, color2);
 
         ArrayList<Integer> colorList = new ArrayList<>();
 
-        int innerRange = Math.max(color1, color2) - Math.min(color1, color2);
-        int crossRange = Math.min(color1, color2) - (Math.max(color1, color2) - 15);
-        boolean isColor1Max = innerRange > crossRange;
+        boolean decrement = (maxColor - minColor) > (minColor - (maxColor - 15));
 
-        colorList.addAll(pushColorsInRange(color1, color2, Config.TROPICAL_COLOR_INNER.get(), isColor1Max, true));
-        colorList.addAll(pushColorsInRange(color1, color2, Config.TROPICAL_COLOR_OUTER.get(), !isColor1Max, false));
-        colorList.addAll(pushColorsInRange(color2, color1, Config.TROPICAL_COLOR_INNER.get(), !isColor1Max, true));
-        colorList.addAll(pushColorsInRange(color2, color1, Config.TROPICAL_COLOR_OUTER.get(), isColor1Max, false));
+        colorList.addAll(pushColorsInRange(minColor, maxColor, Config.TROPICAL_COLOR_INNER.get(), !decrement, true));
+        colorList.addAll(pushColorsInRange(minColor, maxColor, Config.TROPICAL_COLOR_OUTER.get(), decrement, false));
+        colorList.addAll(pushColorsInRange(maxColor, minColor, Config.TROPICAL_COLOR_INNER.get(), decrement, true));
+        colorList.addAll(pushColorsInRange(maxColor, minColor, Config.TROPICAL_COLOR_OUTER.get(), !decrement, false));
 
         int result = colorList.get(r.nextInt(colorList.size()));
-        //FishEggsMod.LOGGER.info("color1: {} | color2: {} | inv: {} | result: {} | array: {}", color1, color2, isColor1Max, result, colorList);
+        //FishEggsMod.LOGGER.info("color1: {} | color2: {} | inv: {} | result: {} | array: {}", color1, color2, decrement, result, colorList);
 
         return DyeColor.byId(
-                colors.get(result)
+                minecraftColors.indexOf(colors.get(result))
         );
     }
 
-    private static int getPattern(int variant1, int variant2) {
+    private static int getNewPattern(int variant1, int variant2) {
         TropicalFish.Pattern pattern = choosePattern(variant1, variant2);
         DyeColor baseColor = getRandomColorWithinRange(variant1, variant2, 16);
         DyeColor patternColor = getRandomColorWithinRange(variant1, variant2, 24);
@@ -146,7 +142,7 @@ public class FishHatchHandler {
         if (data == null) data = new FishEggComponents(EntityType.COD, 0, 0);
 
         if (Config.TROPICAL_SINGLE_PATTERN.get())
-            fishPattern = getPattern(data.variant1(), data.variant2());
+            fishPattern = getNewPattern(data.variant1(), data.variant2());
 
         for (int j = 0; j < Mth.randomBetweenInclusive(level.random, 1, Config.MAX_FISH_FROM_EGGS.get()); j++) {
             Entity thing = data.type().spawn(level, pos, MobSpawnType.BUCKET);
@@ -154,9 +150,12 @@ public class FishHatchHandler {
                 thing.setData(FishDataAttachments.BREED_COOLDOWN, Config.HATCH_BREED_COOLDOWN_TIME.get());
                 if (thing instanceof TropicalFish fish) {
                     if (!Config.TROPICAL_SINGLE_PATTERN.get())
-                        fishPattern = getPattern(data.variant1(), data.variant2());
+                        fishPattern = getNewPattern(data.variant1(), data.variant2());
                     fish.setPackedVariant(fishPattern);
                 }
+                // Prevents despawning
+                if (!Config.HATCHED_CAN_DESPAWN.get() && thing instanceof Bucketable bucketable)
+                    bucketable.setFromBucket(true);
             }
         }
 

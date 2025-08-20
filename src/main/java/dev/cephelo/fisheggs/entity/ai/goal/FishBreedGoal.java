@@ -55,7 +55,7 @@ public class FishBreedGoal extends Goal {
 
     public boolean canContinueToUse() {
         if (this.partner == null) return false;
-        return this.partner.isAlive() && inLove(this.animal) && this.loveTime < 40 && !this.partner.isPanicking();
+        return this.partner.isAlive() && inLove(this.animal) && this.loveTime < 60 && !this.partner.isPanicking();
     }
 
     public void stop() {
@@ -112,12 +112,16 @@ public class FishBreedGoal extends Goal {
 
         this.animal.setData(FishDataAttachments.FISHINLOVE, 0);
         this.animal.setData(FishDataAttachments.BREED_COOLDOWN, Config.BREED_COOLDOWN_TIME.get());
+        if (!Config.HAS_BRED_DESPAWN.get()) this.animal.setFromBucket(true); // Prevents despawning
+
         this.animal.addEffect(new MobEffectInstance(MobEffects.REGENERATION, Config.REGEN_TIME.get()));
         this.animal.removeEffect(MobEffects.NIGHT_VISION); // remove inLove particle indicator
 
         if (this.partner != null) {
             this.partner.setData(FishDataAttachments.FISHINLOVE, 0);
             this.partner.setData(FishDataAttachments.BREED_COOLDOWN, Config.BREED_COOLDOWN_TIME.get());
+            if (!Config.HAS_BRED_DESPAWN.get()) this.partner.setFromBucket(true); // Prevents despawning
+
             this.partner.addEffect(new MobEffectInstance(MobEffects.REGENERATION, Config.REGEN_TIME.get()));
             this.partner.removeEffect(MobEffects.NIGHT_VISION); // remove inLove particle indicator
         }

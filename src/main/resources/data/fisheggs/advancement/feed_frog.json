@@ -1,0 +1,30 @@
+{
+  "parent": "minecraft:husbandry/breed_an_animal",
+  "criteria": {
+    "feed_frog": {
+      "trigger": "minecraft:player_interacted_with_entity",
+      "conditions": {
+        "entity": {
+            "type": "minecraft:frog"
+        },
+        "item": {
+          "items": "fisheggs:fish_eggs"
+        }
+      }
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.fisheggs.feed_frog.desc"
+    },
+    "icon": {
+      "id": "fisheggs:fish_eggs"
+    },
+    "title": {
+      "translate": "advancements.fisheggs.feed_frog.title"
+    }
+  },
+  "requirements": [
+    ["feed_frog"]
+  ]
+}

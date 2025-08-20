@@ -74,8 +74,8 @@ public class FishEggsMod {
     @SubscribeEvent
     public void addAdditionalGoals(EntityJoinLevelEvent event) {
         if (event.getEntity() instanceof AbstractFish fish) {
-            fish.targetSelector.addGoal(1, new FishBreedGoal(fish, 1.25));
-            fish.targetSelector.addGoal(3, new SeekFishFoodGoal(fish, 1.25));
+            fish.targetSelector.addGoal(1, new FishBreedGoal(fish, 1.3));
+            fish.targetSelector.addGoal(3, new SeekFishFoodGoal(fish, 1.3));
         }
     }
 
@@ -124,7 +124,7 @@ public class FishEggsMod {
                 FishHatchHandler.packVariant(TropicalFish.Pattern.BLOCKFISH, DyeColor.PURPLE, DyeColor.YELLOW)));
 
         genericTrades.add((entity, randomSource) -> new MerchantOffer(
-                new ItemCost(Items.EMERALD, 2), clownDotty, 4, 10, 0.05f
+                new ItemCost(Items.EMERALD, 2), clownDotty, 3, 10, 0.05f
         ));
 
 
@@ -134,7 +134,7 @@ public class FishEggsMod {
                 FishHatchHandler.packVariant(TropicalFish.Pattern.BETTY, DyeColor.RED, DyeColor.WHITE)));
 
         genericTrades.add((entity, randomSource) -> new MerchantOffer(
-                new ItemCost(Items.EMERALD, 2), cichlids, 4, 10, 0.05f
+                new ItemCost(Items.EMERALD, 2), cichlids, 3, 10, 0.05f
         ));
 
 
@@ -144,18 +144,18 @@ public class FishEggsMod {
                 FishHatchHandler.packVariant(TropicalFish.Pattern.DASHER, DyeColor.CYAN, DyeColor.YELLOW)));
 
         genericTrades.add((entity, randomSource) -> new MerchantOffer(
-                new ItemCost(Items.EMERALD, 2), cottonYeParrot, 4, 10, 0.05f
+                new ItemCost(Items.EMERALD, 2), cottonYeParrot, 3, 10, 0.05f
         ));
 
 
-        ItemStack blueSnapper = new ItemStack(ModItems.FISH_EGGS.get(), 1);
-        blueSnapper.set(ModDataComponents.FE_COMP.value(), new FishEggComponents(EntityType.TROPICAL_FISH,
-                FishHatchHandler.packVariant(TropicalFish.Pattern.FLOPPER, DyeColor.GRAY, DyeColor.BLUE),
-                FishHatchHandler.packVariant(TropicalFish.Pattern.CLAYFISH, DyeColor.WHITE, DyeColor.RED)));
-
-        genericTrades.add((entity, randomSource) -> new MerchantOffer(
-                new ItemCost(Items.EMERALD, 2), blueSnapper, 4, 10, 0.05f
-        ));
+//        ItemStack blueSnapper = new ItemStack(ModItems.FISH_EGGS.get(), 1);
+//        blueSnapper.set(ModDataComponents.FE_COMP.value(), new FishEggComponents(EntityType.TROPICAL_FISH,
+//                FishHatchHandler.packVariant(TropicalFish.Pattern.FLOPPER, DyeColor.GRAY, DyeColor.BLUE),
+//                FishHatchHandler.packVariant(TropicalFish.Pattern.CLAYFISH, DyeColor.WHITE, DyeColor.RED)));
+//
+//        genericTrades.add((entity, randomSource) -> new MerchantOffer(
+//                new ItemCost(Items.EMERALD, 2), blueSnapper, 3, 10, 0.05f
+//        ));
 
 
         ItemStack tenebris = new ItemStack(ModItems.FISH_EGGS.get(), 1);
