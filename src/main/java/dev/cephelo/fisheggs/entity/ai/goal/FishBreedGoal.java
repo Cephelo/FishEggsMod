@@ -115,7 +115,7 @@ public class FishBreedGoal extends Goal {
         if (!Config.HAS_BRED_DESPAWN.get()) this.animal.setFromBucket(true); // Prevents despawning
 
         this.animal.addEffect(new MobEffectInstance(MobEffects.REGENERATION, Config.REGEN_TIME.get()));
-        this.animal.removeEffect(MobEffects.NIGHT_VISION); // remove inLove particle indicator
+        this.animal.removeEffect(MobEffects.LUCK); // remove inLove particle indicator
 
         if (this.partner != null) {
             this.partner.setData(FishDataAttachments.FISHINLOVE, 0);
@@ -123,7 +123,7 @@ public class FishBreedGoal extends Goal {
             if (!Config.HAS_BRED_DESPAWN.get()) this.partner.setFromBucket(true); // Prevents despawning
 
             this.partner.addEffect(new MobEffectInstance(MobEffects.REGENERATION, Config.REGEN_TIME.get()));
-            this.partner.removeEffect(MobEffects.NIGHT_VISION); // remove inLove particle indicator
+            this.partner.removeEffect(MobEffects.LUCK); // remove inLove particle indicator
         }
 
         if (level.getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT) && Config.FISH_BREEDING_XP.get() != 0) {

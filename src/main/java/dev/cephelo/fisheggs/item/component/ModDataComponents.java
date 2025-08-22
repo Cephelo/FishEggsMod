@@ -19,6 +19,14 @@ public class ModDataComponents {
                     .networkSynchronized(FishEggComponents.FE_STREAM_CODEC)
     );
 
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<SquidEggsComponent>> SE_COMP =
+            REGISTRAR.registerComponentType(
+                    "se_comp",
+                    builder -> builder
+                            .persistent(SquidEggsComponent.SE_CODEC)
+                            .networkSynchronized(SquidEggsComponent.SE_STREAM_CODEC)
+            );
+
     public static void register(IEventBus eventBus) {
         REGISTRAR.register(eventBus);
     }

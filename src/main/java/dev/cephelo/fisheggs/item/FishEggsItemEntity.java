@@ -31,9 +31,12 @@ public class FishEggsItemEntity extends ItemEntity {
         if (!this.level().isClientSide && this.getAge() >= this.lifespan - 1) {
             this.lifespan = Mth.clamp(this.lifespan + EventHooks.onItemExpire(this), 0, 32766);
             if (this.getAge() >= this.lifespan - 1 && this.level() instanceof ServerLevel serverLevel) {
-                for (int i = 0; i < this.getItem().getCount(); i++)
-                    FishHatchHandler.spawnFish(serverLevel, this.getOnPos().above(),
-                            this.getItem().get(ModDataComponents.FE_COMP));
+                if (Config.FISH_EGGS_NEED_WATER.get() && !this.isInWater()) {}
+                else {
+                    for (int i = 0; i < this.getItem().getCount(); i++)
+                        FishHatchHandler.spawnFish(serverLevel, this.getOnPos().above(),
+                                this.getItem().get(ModDataComponents.FE_COMP));
+                }
             }
         }
         super.tick();

@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "package": "dev.cephelo.fisheggs.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "SquidMixins"
+  ],
+  "client": [],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

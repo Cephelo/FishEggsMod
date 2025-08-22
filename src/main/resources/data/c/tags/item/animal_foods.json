@@ -1,6 +1,9 @@
 {
   "replace": false,
   "values": [
-    "fisheggs:fish_food"
+    {
+      "id": "#fisheggs:fish_food",
+      "required": false
+    }
   ]
 }

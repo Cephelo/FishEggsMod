@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-    "fisheggs:fish_eggs"
+    "fisheggs:fish_eggs",
+    "fisheggs:cooked_squid_eggs"
   ]
 }

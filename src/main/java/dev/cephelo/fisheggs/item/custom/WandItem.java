@@ -1,10 +1,17 @@
 package dev.cephelo.fisheggs.item.custom;
 
+import dev.cephelo.fisheggs.attachment.FishDataAttachments;
 import dev.cephelo.fisheggs.item.ModItems;
+import dev.cephelo.fisheggs.sound.ModSounds;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.animal.AbstractFish;
+import net.minecraft.world.entity.animal.Squid;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -23,13 +30,26 @@ public class WandItem extends Item {
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand usedHand) {
         ItemStack other = player.getItemInHand(InteractionHand.OFF_HAND);
-        if (other.getItem() == ModItems.FISH_EGGS.get().asItem()) {
+        if (other.getItem() == ModItems.FISH_EGGS.get().asItem() || other.getItem() == ModItems.SQUID_EGGS.get().asItem()) {
             player.addItem(other.copy());
+            level.playSound(null, player.blockPosition(), ModSounds.WAND_USE.get(), SoundSource.NEUTRAL);
             return InteractionResultHolder.consume(player.getItemInHand(usedHand));
         }
         return InteractionResultHolder.pass(player.getItemInHand(usedHand));
     }
 
+    @Override
+    public InteractionResult interactLivingEntity(ItemStack stack, Player player, LivingEntity interactionTarget, InteractionHand usedHand) {
+        if (interactionTarget instanceof AbstractFish || interactionTarget instanceof Squid) {
+            if (interactionTarget.getData(FishDataAttachments.BREED_COOLDOWN.get()) > 0) {
+                player.swing(usedHand);
+                interactionTarget.setData(FishDataAttachments.BREED_COOLDOWN.get(), 0);
+                player.level().playSound(null, player.blockPosition(), ModSounds.WAND_USE.get(), SoundSource.NEUTRAL);
+                return InteractionResult.CONSUME;
+            }
+        }
+        return InteractionResult.PASS;
+    }
 
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {

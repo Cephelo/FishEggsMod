@@ -1,0 +1,29 @@
+{
+  "parent": "fisheggs:caviar",
+  "criteria": {
+    "eat_eggs": {
+      "trigger": "minecraft:consume_item",
+      "conditions": {
+        "items": [{
+            "items": "fisheggs:cooked_squid_eggs"
+          }]
+      }
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.delicacy.caviar.desc"
+    },
+    "icon": {
+      "id": "fisheggs:cooked_squid_eggs"
+    },
+    "title": {
+      "translate": "advancements.delicacy.caviar.title"
+    }
+  },
+  "requirements": [
+    [
+      "eat_eggs"
+    ]
+  ]
+}

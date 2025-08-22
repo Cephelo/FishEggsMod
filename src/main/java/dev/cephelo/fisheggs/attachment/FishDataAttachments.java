@@ -22,6 +22,10 @@ public class FishDataAttachments {
             "breed_cooldown", () -> AttachmentType.builder(() -> 0).serialize(Codec.INT).build()
     );
 
+    public static final Supplier<AttachmentType<Boolean>> HAS_TARGET = ATTACHMENT_TYPES.register(
+            "has_target", () -> AttachmentType.builder(() -> false).serialize(Codec.BOOL).build()
+    );
+
     // In your mod constructor, don't forget to register the DeferredRegister to your mod bus:
     public static void register(IEventBus eventBus) {
         ATTACHMENT_TYPES.register(eventBus);

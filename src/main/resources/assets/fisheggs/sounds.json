@@ -31,5 +31,15 @@
         "volume": 0.5
       }
     ]
+  },
+  "wand_use": {
+    "sounds": [
+      {
+        "name": "entity.experience_orb.pickup",
+        "type": "event",
+        "pitch": 1.5,
+        "volume": 0.2
+      }
+    ]
   }
 }

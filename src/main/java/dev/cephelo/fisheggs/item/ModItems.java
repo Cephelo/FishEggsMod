@@ -2,6 +2,7 @@ package dev.cephelo.fisheggs.item;
 
 import dev.cephelo.fisheggs.FishEggsMod;
 import dev.cephelo.fisheggs.item.custom.WandItem;
+import dev.cephelo.fisheggs.item.squid.SquidEggsItem;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.food.FoodProperties;
@@ -24,6 +25,19 @@ public class ModItems {
 
     public static final DeferredItem<Item> FISH_FOOD = ITEMS.register("fish_food",
             () -> new Item(new Item.Properties()));
+
+    public static final DeferredItem<Item> SQUID_EGGS = ITEMS.register("squid_eggs",
+            () -> new SquidEggsItem(new Item.Properties()
+                    .food((new FoodProperties.Builder()).nutrition(2).saturationModifier(0.1F)
+                            .effect(new MobEffectInstance(MobEffects.POISON, 200, 1), 0.3F)
+                            .build()))
+    );
+
+    public static final DeferredItem<Item> COOKED_SQUID_EGGS = ITEMS.register("cooked_squid_eggs",
+            () -> new SquidEggsItem(new Item.Properties()
+                    .food((new FoodProperties.Builder()).nutrition(5).saturationModifier(0.3F)
+                            .build()))
+    );
 
     public static final DeferredItem<Item> WAND = ITEMS.register("wand",
             () -> new WandItem(new Item.Properties()));

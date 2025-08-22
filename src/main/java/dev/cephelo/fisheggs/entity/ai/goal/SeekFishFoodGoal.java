@@ -150,7 +150,7 @@ public class SeekFishFoodGoal extends Goal {
                 this.mob.getNavigation().stop();
 
                 // particle indicator
-                this.mob.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, Config.LOVE_TIME.get()));
+                this.mob.addEffect(new MobEffectInstance(MobEffects.LUCK, Config.LOVE_TIME.get()));
                 this.mob.level().playSound(null, this.mob.getOnPos(), ModSounds.FISH_EATS.get(), SoundSource.NEUTRAL);
             }
         } else {
