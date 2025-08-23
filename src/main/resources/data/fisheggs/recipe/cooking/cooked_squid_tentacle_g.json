@@ -2,11 +2,11 @@
   "type": "minecraft:smelting",
   "category": "food",
   "cookingtime": 200,
-  "experience": 1.0,
+  "experience": 0.35,
   "ingredient": {
-  	"item": "fisheggs:squid_eggs"
+  	"item": "fisheggs:glow_squid_tentacle"
   },
   "result": {
-  	"id": "squid_eggs:cooked_squid_eggs"
+  	"id": "fisheggs:cooked_squid_tentacle"
   }
 }

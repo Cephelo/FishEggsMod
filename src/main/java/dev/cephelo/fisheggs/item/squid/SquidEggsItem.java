@@ -78,7 +78,7 @@ public class SquidEggsItem extends Item {
             }
         }
 
-        level.playSound(null, pos, ModSounds.EGGS_HATCH.get(), SoundSource.NEUTRAL);
+        level.playSound(null, pos, ModSounds.SQUID_EGGS_HATCH.get(), SoundSource.NEUTRAL);
     }
 
     @Override

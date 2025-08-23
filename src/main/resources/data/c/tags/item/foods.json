@@ -2,6 +2,11 @@
   "replace": false,
   "values": [
     "fisheggs:fish_eggs",
-    "fisheggs:cooked_squid_eggs"
+    "fisheggs:squid_eggs",
+    "fisheggs:cooked_squid_eggs",
+    "fisheggs:squid_tentacle",
+    "fisheggs:glow_squid_tentacle",
+    "fisheggs:cooked_squid_tentacle",
+    "fisheggs:calamari_supreme"
   ]
 }

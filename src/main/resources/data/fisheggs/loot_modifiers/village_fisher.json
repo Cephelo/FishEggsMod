@@ -3,12 +3,12 @@
     "conditions": [
     	{
     		"condition": "neoforge:loot_table_id",
-    		"loot_table_id": "minecraft:chests/underwater_ruin_big"
+    		"loot_table_id": "minecraft:chests/village/village_fisher"
 		},
 		{
     		"condition": "minecraft:random_chance",
-    		"chance": 0.3
+    		"chance": 0.75
 		}
 	],
-    "table": "fisheggs:chests/squid_eggs"
+    "table": "fisheggs:chests/village_fisher"
 }

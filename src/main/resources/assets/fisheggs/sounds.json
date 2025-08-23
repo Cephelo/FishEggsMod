@@ -32,6 +32,39 @@
       }
     ]
   },
+  "squid_breeds": {
+    "subtitle": "sounds.fisheggs.squid_breeds",
+    "sounds": [
+      {
+        "name": "entity.cod.hurt",
+        "type": "event",
+        "pitch": 1.25,
+        "volume": 0.25
+      }
+    ]
+  },
+  "squid_eats": {
+    "subtitle": "sounds.fisheggs.squid_eats",
+    "sounds": [
+      {
+        "name": "entity.generic.eat",
+        "type": "event",
+        "pitch": 1.75,
+        "volume": 0.25
+      }
+    ]
+  },
+  "squid_eggs_hatch": {
+    "subtitle": "sounds.fisheggs.squid_hatch",
+    "sounds": [
+      {
+        "name": "entity.turtle.egg_crack",
+        "type": "event",
+        "pitch": 2,
+        "volume": 0.5
+      }
+    ]
+  },
   "wand_use": {
     "sounds": [
       {

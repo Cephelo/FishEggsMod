@@ -1,0 +1,30 @@
+{
+  "parent": "fisheggs:feed_frog",
+  "criteria": {
+    "feed_axolotl": {
+      "trigger": "minecraft:player_interacted_with_entity",
+      "conditions": {
+        "entity": {
+            "type": "minecraft:axolotl"
+        },
+        "item": {
+          "items": "fisheggs:squid_eggs"
+        }
+      }
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.fisheggs.feed_axolotl.desc"
+    },
+    "icon": {
+      "id": "fisheggs:squid_eggs"
+    },
+    "title": {
+      "translate": "advancements.fisheggs.feed_axolotl.title"
+    }
+  },
+  "requirements": [
+    ["feed_axolotl"]
+  ]
+}

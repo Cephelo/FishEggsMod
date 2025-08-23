@@ -137,6 +137,6 @@ public class SquidBreedGoal extends Goal {
             level.addFreshEntity(new ExperienceOrb(level, this.animal.getX(), this.animal.getY(), this.animal.getZ(), level.getRandom().nextInt(Config.SQUID_BREEDING_XP.get() - 1) + 1));
         }
 
-        level.playSound(null, this.animal.getOnPos(), ModSounds.FISH_BREEDS.get(), SoundSource.NEUTRAL);
+        level.playSound(null, this.animal.getOnPos(), ModSounds.SQUID_BREEDS.get(), SoundSource.NEUTRAL);
     }
 }

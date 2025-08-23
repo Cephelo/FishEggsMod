@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "food",
+  "key": {
+    "E": {
+      "tag": "c:eggs"
+    },
+    "S": {
+      "item": "fisheggs:cooked_squid_eggs"
+    },
+    "T": {
+      "tag": "fisheggs:cooked_squid"
+    },
+    "W": {
+      "tag": "c:crops/wheat"
+    }
+  },
+  "pattern": [
+    "SES",
+    "TWT",
+    "WTW"
+  ],
+  "result": {
+    "id": "fisheggs:calamari_supreme"
+  }
+}

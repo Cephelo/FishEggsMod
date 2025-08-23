@@ -1,0 +1,30 @@
+{
+  "parent": "fisheggs:delicacy",
+  "criteria": {
+    "calamari_supreme": {
+      "trigger": "minecraft:consume_item",
+      "conditions": {
+        "items": [{
+            "items": "fisheggs:calamari_supreme"
+          }]
+      }
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.fisheggs.calamari_supreme.desc"
+    },
+    "icon": {
+      "id": "fisheggs:calamari_supreme"
+    },
+    "frame": "goal",
+    "title": {
+      "translate": "advancements.fisheggs.calamari_supreme.title"
+    }
+  },
+  "requirements": [
+    [
+      "calamari_supreme"
+    ]
+  ]
+}

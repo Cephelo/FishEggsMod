@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:smelting",
+  "category": "food",
+  "cookingtime": 200,
+  "experience": 0.35,
+  "ingredient": {
+  	"item": "fisheggs:squid_tentacle"
+  },
+  "result": {
+  	"id": "fisheggs:cooked_squid_tentacle"
+  }
+}

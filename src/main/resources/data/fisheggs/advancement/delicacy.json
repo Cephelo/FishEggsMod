@@ -12,13 +12,13 @@
   },
   "display": {
     "description": {
-      "translate": "advancements.delicacy.caviar.desc"
+      "translate": "advancements.fisheggs.delicacy.desc"
     },
     "icon": {
       "id": "fisheggs:cooked_squid_eggs"
     },
     "title": {
-      "translate": "advancements.delicacy.caviar.title"
+      "translate": "advancements.fisheggs.delicacy.title"
     }
   },
   "requirements": [

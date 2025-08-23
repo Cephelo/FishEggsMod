@@ -10,6 +10,7 @@ import dev.cephelo.fisheggs.item.component.FishEggComponents;
 import dev.cephelo.fisheggs.item.component.ModDataComponents;
 import dev.cephelo.fisheggs.item.component.SquidEggsComponent;
 import dev.cephelo.fisheggs.item.handler.FishHatchHandler;
+import dev.cephelo.fisheggs.potion.ModPotions;
 import dev.cephelo.fisheggs.sound.ModSounds;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.minecraft.world.entity.EntityType;
@@ -20,8 +21,11 @@ import net.minecraft.world.entity.animal.TropicalFish;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.npc.VillagerTrades;
 import net.minecraft.world.item.*;
+import net.minecraft.world.item.alchemy.PotionBrewing;
+import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.trading.ItemCost;
 import net.minecraft.world.item.trading.MerchantOffer;
+import net.neoforged.neoforge.event.brewing.RegisterBrewingRecipesEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.neoforged.neoforge.event.village.VillagerTradesEvent;
@@ -50,8 +54,10 @@ public class FishEggsMod {
     // The constructor for the mod class is the first code that is run when your mod is loaded.
     // FML will recognize some parameter types like IEventBus or ModContainer and pass them in automatically.
     public FishEggsMod(IEventBus modEventBus, ModContainer modContainer) {
+
         ModDataComponents.register(modEventBus);
         ModItems.register(modEventBus);
+        ModPotions.register(modEventBus);
         FishDataAttachments.register(modEventBus);
         ModSounds.register(modEventBus);
 
@@ -74,7 +80,13 @@ public class FishEggsMod {
             event.accept(ModItems.WAND);
         }
         if (event.getTabKey() == CreativeModeTabs.FOOD_AND_DRINKS) {
-            event.accept(ModItems.COOKED_SQUID_EGGS);
+            event.insertAfter(new ItemStack(Items.PUFFERFISH), ModItems.CALAMARI_SUPREME.toStack(), CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
+            event.insertAfter(new ItemStack(Items.PUFFERFISH), ModItems.COOKED_SQUID_EGGS.toStack(), CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
+            event.insertAfter(new ItemStack(Items.PUFFERFISH), ModItems.SQUID_EGGS.toStack(), CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
+            event.insertAfter(new ItemStack(Items.PUFFERFISH), ModItems.FISH_EGGS.toStack(), CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
+            event.insertAfter(new ItemStack(Items.PUFFERFISH), ModItems.COOKED_SQUID_TENTACLE.toStack(), CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
+            event.insertAfter(new ItemStack(Items.PUFFERFISH), ModItems.GLOW_SQUID_TENTACLE.toStack(), CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
+            event.insertAfter(new ItemStack(Items.PUFFERFISH), ModItems.SQUID_TENTACLE.toStack(), CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
         }
     }
 
@@ -112,6 +124,21 @@ public class FishEggsMod {
     }
 
     @SubscribeEvent
+    public void onBrewingRecipeRegister(RegisterBrewingRecipesEvent event) {
+        PotionBrewing.Builder builder = event.getBuilder();
+
+        Item eggs = ModItems.SQUID_EGGS.get();
+        builder.addMix(Potions.AWKWARD, eggs, Potions.WATER_BREATHING);
+        builder.addMix(Potions.NIGHT_VISION, Items.GLOW_INK_SAC, ModPotions.GLOWING);
+        builder.addMix(ModPotions.GLOWING, Items.REDSTONE, ModPotions.LONG_GLOWING);
+        builder.addMix(Potions.NIGHT_VISION, Items.INK_SAC, ModPotions.BLINDNESS);
+        builder.addMix(Potions.LONG_NIGHT_VISION, Items.INK_SAC, ModPotions.LONG_BLINDNESS);
+        builder.addMix(ModPotions.BLINDNESS, Items.REDSTONE, ModPotions.LONG_BLINDNESS);
+        builder.addMix(ModPotions.GLOWING, Items.FERMENTED_SPIDER_EYE, Potions.INVISIBILITY);
+        builder.addMix(ModPotions.LONG_GLOWING, Items.FERMENTED_SPIDER_EYE, Potions.LONG_INVISIBILITY);
+    }
+
+    @SubscribeEvent
     public void addCustomTrades(VillagerTradesEvent event) {
         if (!Config.ENABLE_FISHERMAN_TRADE.get()) return;
         if (event.getType() == VillagerProfession.FISHERMAN) {
@@ -122,9 +149,19 @@ public class FishEggsMod {
                     new ItemStack(Items.EMERALD, 1), 8, 5, 0.05f
             ));
 
+            trades.get(3).add((entity, randomSource) -> new MerchantOffer(
+                    new ItemCost(ModItems.SQUID_TENTACLE.get(), 14),
+                    new ItemStack(Items.EMERALD, 1), 16, 20, 0.05f
+            ));
+
             trades.get(4).add((entity, randomSource) -> new MerchantOffer(
                     new ItemCost(ModItems.FISH_EGGS.get(), 3),
                     new ItemStack(Items.EMERALD, 1), 8, 25, 0.05f
+            ));
+
+            trades.get(4).add((entity, randomSource) -> new MerchantOffer(
+                    new ItemCost(ModItems.GLOW_SQUID_TENTACLE.get(), 6),
+                    new ItemStack(Items.EMERALD, 1), 12, 30, 0.05f
             ));
 
             trades.get(5).add((entity, randomSource) -> new MerchantOffer(
@@ -136,9 +173,14 @@ public class FishEggsMod {
         if (event.getType() == VillagerProfession.BUTCHER) {
             Int2ObjectMap<List<VillagerTrades.ItemListing>> trades = event.getTrades();
 
-            trades.get(2).add((entity, randomSource) -> new MerchantOffer(
-                    new ItemCost(ModItems.COOKED_SQUID_EGGS.get(), 2),
-                    new ItemStack(Items.EMERALD, 4), 8, 30, 0.05f
+            trades.get(4).add((entity, randomSource) -> new MerchantOffer(
+                    new ItemCost(ModItems.COOKED_SQUID_EGGS.get(), 1),
+                    new ItemStack(Items.EMERALD, 2), 6, 30, 0.05f
+            ));
+
+            trades.get(5).add((entity, randomSource) -> new MerchantOffer(
+                    new ItemCost(ModItems.CALAMARI_SUPREME.get(), 1),
+                    new ItemStack(Items.EMERALD, 8), 2, 30, 0.05f
             ));
         }
     }

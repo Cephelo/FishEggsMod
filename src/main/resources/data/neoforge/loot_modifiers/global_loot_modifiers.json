@@ -3,6 +3,9 @@
   "entries": [
     "fisheggs:fish_eggs",
     "fisheggs:fish_eggs_b",
-    "fisheggs:squid_eggs_b"
+    "fisheggs:squid_eggs_b",
+    "fisheggs:squid_tentacles",
+    "fisheggs:glow_squid_tentacles",
+    "fisheggs:village_fisher"
   ]
 }

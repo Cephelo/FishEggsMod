@@ -1,7 +1,10 @@
 {
   "values": {
   	"fisheggs:fish_food": {
-  		"chance": 0.3
+  		"chance": 0.5
+  	},
+  	"fisheggs:calamari_supreme": {
+  		"chance": 1.0
   	}
   }
 }

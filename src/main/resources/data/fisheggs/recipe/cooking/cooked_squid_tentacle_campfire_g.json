@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:campfire_cooking",
+  "category": "food",
+  "cookingtime": 600,
+  "experience": 0.35,
+  "ingredient": {
+  	"item": "fisheggs:glow_squid_tentacle"
+  },
+  "result": {
+  	"id": "fisheggs:cooked_squid_tentacle"
+  }
+}

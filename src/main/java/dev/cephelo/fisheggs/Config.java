@@ -95,7 +95,7 @@ public class Config {
 
     public static final ModConfigSpec.BooleanValue ENABLE_FISHERMAN_TRADE = BUILDER
             .comment("\n Whether fishBlacklist should act as a whitelist rather than a blacklist")
-            .define("enableFishermanTrades", true);
+            .define("enableVillagerTrades", true);
 
     public static final ModConfigSpec.BooleanValue ENABLE_WANDERING_TRADE = BUILDER
             .comment("\n Whether fishBlacklist should act as a whitelist rather than a blacklist")
@@ -150,7 +150,7 @@ public class Config {
 
     public static final ModConfigSpec.DoubleValue SQUID_MATE_SEARCH_RANGE = BUILDER
             .comment("\n The range a squid will hunt for a breeding partner")
-            .defineInRange("squidPartnerSearchRange", 16.0, 0.0, 64.0);
+            .defineInRange("squidPartnerSearchRange", 12.0, 0.0, 64.0);
 
     public static final ModConfigSpec.DoubleValue SQUID_DIST_HUNT = BUILDER
             .comment("\n The maximum squared distance a squid can consume prey")
@@ -223,6 +223,10 @@ public class Config {
     public static final ModConfigSpec.BooleanValue SQUID_EGGS_NEED_WATER = BUILDER
             .comment("\n Whether the Squid Eggs item should display the entity type of the parents")
             .define("squidEggsNeedWater", true);
+
+    public static final ModConfigSpec.BooleanValue CONSUME_PREY = BUILDER
+            .comment("\n Whether Squid should completely consume prey with 1hp remaining; disable to have them kill prey normally")
+            .define("squidConsumeWeakPrey", true);
 
     public static final ModConfigSpec.ConfigValue<String> MAGIC_NUMBER_INTRODUCTION = BUILDER
             .comment("What you want the introduction message to be for the magic number")

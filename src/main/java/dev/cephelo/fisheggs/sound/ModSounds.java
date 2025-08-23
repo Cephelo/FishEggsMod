@@ -16,6 +16,9 @@ public class ModSounds {
     public static final Supplier<SoundEvent> FISH_EATS = registerSoundEvent("fish_eats");
     public static final Supplier<SoundEvent> FISH_BREEDS = registerSoundEvent("fish_breeds");
     public static final Supplier<SoundEvent> EGGS_HATCH = registerSoundEvent("eggs_hatch");
+    public static final Supplier<SoundEvent> SQUID_EATS = registerSoundEvent("squid_eats");
+    public static final Supplier<SoundEvent> SQUID_BREEDS = registerSoundEvent("squid_breeds");
+    public static final Supplier<SoundEvent> SQUID_EGGS_HATCH = registerSoundEvent("squid_eggs_hatch");
     public static final Supplier<SoundEvent> WAND_USE = registerSoundEvent("wand_use");
 
     private static Supplier<SoundEvent> registerSoundEvent(String name) {

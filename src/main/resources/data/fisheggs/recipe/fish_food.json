@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+  	  "tag": "c:foods/raw_fish"
+  	},
+    {
+  	  "tag": "fisheggs:fish_food/plant_matter"
+  	},
+    {
+  	  "tag": "fisheggs:fish_food/sea_plants"
+  	},
+    {
+  	  "tag": "fisheggs:fish_food/fish_treat"
+  	}
+  ],
+  "result": {
+    "id": "fisheggs:fish_food",
+    "count": 8
+  }
+}

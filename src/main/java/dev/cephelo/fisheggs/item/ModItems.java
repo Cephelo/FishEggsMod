@@ -1,5 +1,6 @@
 package dev.cephelo.fisheggs.item;
 
+import dev.cephelo.fisheggs.Config;
 import dev.cephelo.fisheggs.FishEggsMod;
 import dev.cephelo.fisheggs.item.custom.WandItem;
 import dev.cephelo.fisheggs.item.squid.SquidEggsItem;
@@ -34,8 +35,32 @@ public class ModItems {
     );
 
     public static final DeferredItem<Item> COOKED_SQUID_EGGS = ITEMS.register("cooked_squid_eggs",
-            () -> new SquidEggsItem(new Item.Properties()
-                    .food((new FoodProperties.Builder()).nutrition(5).saturationModifier(0.3F)
+            () -> new Item(new Item.Properties()
+                    .food((new FoodProperties.Builder()).nutrition(4).saturationModifier(0.5F)
+                            .build()))
+    );
+
+    public static final DeferredItem<Item> SQUID_TENTACLE = ITEMS.register("squid_tentacle",
+            () -> new Item(new Item.Properties()
+                    .food((new FoodProperties.Builder()).nutrition(3).saturationModifier(0.2F).build()))
+    );
+
+    public static final DeferredItem<Item> GLOW_SQUID_TENTACLE = ITEMS.register("glow_squid_tentacle",
+            () -> new Item(new Item.Properties()
+                    .food((new FoodProperties.Builder()).nutrition(3).saturationModifier(0.2F)
+                            .effect(new MobEffectInstance(MobEffects.GLOWING, 300, 0), 1.0F)
+                            .build()))
+    );
+
+    public static final DeferredItem<Item> COOKED_SQUID_TENTACLE = ITEMS.register("cooked_squid_tentacle",
+            () -> new Item(new Item.Properties()
+                    .food((new FoodProperties.Builder()).nutrition(5).saturationModifier(0.6F).build()))
+    );
+
+    public static final DeferredItem<Item> CALAMARI_SUPREME = ITEMS.register("calamari_supreme",
+            () -> new Item(new Item.Properties()
+                    .food((new FoodProperties.Builder()).nutrition(12).saturationModifier(1.6F)
+                            .effect(new MobEffectInstance(MobEffects.LUCK, 1800, 0), 1.0F)
                             .build()))
     );
 

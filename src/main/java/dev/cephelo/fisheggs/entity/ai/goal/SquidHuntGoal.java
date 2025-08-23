@@ -125,14 +125,19 @@ public class SquidHuntGoal extends Goal {
         }
 
         this.prey.hurt(new DamageSource(level.registryAccess().holderOrThrow(DamageTypes.MOB_ATTACK), this.animal, this.animal), Config.SQUID_HUNT_DAMAGE.get());
-        if (this.prey.getHealth() <= 1) {
+        if (Config.CONSUME_PREY.get() && this.prey.getHealth() <= 1) {
             this.prey.discard();
+            if (!this.animal.isBaby()) {
+                this.animal.setData(FishDataAttachments.FISHINLOVE, Config.SQUID_LOVE_TIME.get());
+                this.animal.addEffect(new MobEffectInstance(MobEffects.LUCK, Config.SQUID_LOVE_TIME.get()));
+            }
+        } else if (!Config.CONSUME_PREY.get() && this.prey.getHealth() <= 0) {
             if (!this.animal.isBaby()) {
                 this.animal.setData(FishDataAttachments.FISHINLOVE, Config.SQUID_LOVE_TIME.get());
                 this.animal.addEffect(new MobEffectInstance(MobEffects.LUCK, Config.SQUID_LOVE_TIME.get()));
             }
         }
 
-        level.playSound(null, this.animal.getOnPos(), ModSounds.FISH_BREEDS.get(), SoundSource.NEUTRAL, 1.0f, 0.5f);
+        level.playSound(null, this.animal.getOnPos(), ModSounds.SQUID_EATS.get(), SoundSource.NEUTRAL, 1.0f, 0.5f);
     }
 }

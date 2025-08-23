@@ -1,0 +1,11 @@
+{
+  "values": [
+    "#c:foods/raw_fish",
+    "#c:eggs",
+    "minecraft:turtle_egg",
+    "minecraft:spider_eye",
+    "minecraft:sea_pickle",
+    "fisheggs:fish_eggs",
+    "fisheggs:squid_eggs"
+  ]
+}
