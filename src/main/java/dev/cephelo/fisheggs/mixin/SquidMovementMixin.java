@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(targets = "net.minecraft.world.entity.animal.Squid$SquidRandomMovementGoal")
-public class SquidMixins {
+public class SquidMovementMixin {
     @Shadow @Final private Squid squid;
 
     // So Squid$SquidRandomMovementGoal doesn't occur while squid is hunting or searching for a mate

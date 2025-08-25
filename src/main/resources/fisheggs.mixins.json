@@ -3,7 +3,9 @@
   "package": "dev.cephelo.fisheggs.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-    "SquidMixins"
+    "FeedEntityMixin",
+    "AxolotlAutoBreedMixin",
+    "SquidMovementMixin"
   ],
   "client": [],
   "injectors": {

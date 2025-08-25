@@ -10,6 +10,7 @@ import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
@@ -72,7 +73,7 @@ public class SquidHuntGoal extends Goal {
 
     public static boolean canHunt(EntityType type) {
         return Config.CANHUNT_BLACKLIST.get().contains(EntityType.getKey(type).toString())
-                == !Config.CANHUNT_BLACKLIST_IS_WHITELIST.get();
+                == Config.CANHUNT_BLACKLIST_IS_WHITELIST.get();
     }
 
     public static boolean blacklistContainsPrey(EntityType type) {
@@ -125,19 +126,20 @@ public class SquidHuntGoal extends Goal {
         }
 
         this.prey.hurt(new DamageSource(level.registryAccess().holderOrThrow(DamageTypes.MOB_ATTACK), this.animal, this.animal), Config.SQUID_HUNT_DAMAGE.get());
-        if (Config.CONSUME_PREY.get() && this.prey.getHealth() <= 1) {
-            this.prey.discard();
-            if (!this.animal.isBaby()) {
-                this.animal.setData(FishDataAttachments.FISHINLOVE, Config.SQUID_LOVE_TIME.get());
-                this.animal.addEffect(new MobEffectInstance(MobEffects.LUCK, Config.SQUID_LOVE_TIME.get()));
-            }
-        } else if (!Config.CONSUME_PREY.get() && this.prey.getHealth() <= 0) {
-            if (!this.animal.isBaby()) {
-                this.animal.setData(FishDataAttachments.FISHINLOVE, Config.SQUID_LOVE_TIME.get());
-                this.animal.addEffect(new MobEffectInstance(MobEffects.LUCK, Config.SQUID_LOVE_TIME.get()));
-            }
-        }
 
         level.playSound(null, this.animal.getOnPos(), ModSounds.SQUID_EATS.get(), SoundSource.NEUTRAL, 1.0f, 0.5f);
+        if (this.animal.isBaby()) return;
+
+        if (Config.CONSUME_PREY.get())
+            this.prey.discard();
+
+        if (this.prey.getHealth() <= (Config.CONSUME_PREY.get() ? 1 : 0))
+            if (level.getRandom().nextInt(100) <= Config.SQUID_HUNT_BREED_CHANCE.get() * 100)
+                setLoveState(this.animal);
+    }
+
+    public static void setLoveState(Mob animal) {
+        animal.setData(FishDataAttachments.FISHINLOVE, Config.SQUID_LOVE_TIME.get());
+        animal.addEffect(new MobEffectInstance(MobEffects.LUCK, Config.SQUID_LOVE_TIME.get()));
     }
 }

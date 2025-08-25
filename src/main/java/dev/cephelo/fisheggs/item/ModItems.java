@@ -1,6 +1,5 @@
 package dev.cephelo.fisheggs.item;
 
-import dev.cephelo.fisheggs.Config;
 import dev.cephelo.fisheggs.FishEggsMod;
 import dev.cephelo.fisheggs.item.custom.WandItem;
 import dev.cephelo.fisheggs.item.squid.SquidEggsItem;
@@ -15,12 +14,11 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 public class ModItems {
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(FishEggsMod.MODID);
 
-    @SuppressWarnings("deprecation")
     public static final DeferredItem<Item> FISH_EGGS = ITEMS.register("fish_eggs",
             () -> new FishEggsItem(new Item.Properties()
                     //.component(ModDataComponents.FE_COMP.value(), new FishEggComponents(EntityType.COD, 0, 0))
                     .food((new FoodProperties.Builder()).nutrition(1).saturationModifier(0.05F)
-                            .effect(new MobEffectInstance(MobEffects.POISON, 200, 0), 0.3F)
+                            .effect(() -> new MobEffectInstance(MobEffects.POISON, 200, 0), 0.3F)
                             .fast().build()))
             );
 
@@ -30,7 +28,7 @@ public class ModItems {
     public static final DeferredItem<Item> SQUID_EGGS = ITEMS.register("squid_eggs",
             () -> new SquidEggsItem(new Item.Properties()
                     .food((new FoodProperties.Builder()).nutrition(2).saturationModifier(0.1F)
-                            .effect(new MobEffectInstance(MobEffects.POISON, 200, 1), 0.3F)
+                            .effect(() -> new MobEffectInstance(MobEffects.POISON, 200, 1), 0.3F)
                             .build()))
     );
 
@@ -48,7 +46,7 @@ public class ModItems {
     public static final DeferredItem<Item> GLOW_SQUID_TENTACLE = ITEMS.register("glow_squid_tentacle",
             () -> new Item(new Item.Properties()
                     .food((new FoodProperties.Builder()).nutrition(3).saturationModifier(0.2F)
-                            .effect(new MobEffectInstance(MobEffects.GLOWING, 300, 0), 1.0F)
+                            .effect(() -> new MobEffectInstance(MobEffects.GLOWING, 300, 0), 1.0F)
                             .build()))
     );
 
@@ -59,8 +57,8 @@ public class ModItems {
 
     public static final DeferredItem<Item> CALAMARI_SUPREME = ITEMS.register("calamari_supreme",
             () -> new Item(new Item.Properties()
-                    .food((new FoodProperties.Builder()).nutrition(12).saturationModifier(1.6F)
-                            .effect(new MobEffectInstance(MobEffects.LUCK, 1800, 0), 1.0F)
+                    .food((new FoodProperties.Builder()).nutrition(12).saturationModifier(1.25F)
+                            .effect(() -> new MobEffectInstance(MobEffects.LUCK, 1800, 0), 1.0F)
                             .build()))
     );
 

@@ -55,7 +55,7 @@
     ]
   },
   "squid_eggs_hatch": {
-    "subtitle": "sounds.fisheggs.squid_hatch",
+    "subtitle": "sounds.fisheggs.squid_eggs_hatch",
     "sounds": [
       {
         "name": "entity.turtle.egg_crack",

@@ -11,6 +11,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -38,36 +39,32 @@ public class SeekFishFoodGoal extends Goal {
         this.range = Config.FOOD_SEARCH_RANGE.get();
     }
 
-    private ItemStack getFoodStack(ItemEntity input) {
+    public static ItemStack getFoodStack(ItemStack input, EntityType type) {
         if (!Config.FISH_IDS.get().isEmpty() && !Config.FOOD_TAGS.get().isEmpty()) {
 
             for (int i = 0; i < Config.FISH_IDS.get().size(); i++) {
                 Optional<EntityType<?>> oFish = EntityType.byString(Config.FISH_IDS.get().get(i));
 
-                if (oFish.isPresent() && this.mob.getType() == oFish.get()) {
+                if (oFish.isPresent() && type == oFish.get()) {
                     TagKey<Item> key = TagKey.create(Registries.ITEM,
                             ResourceLocation.parse(Config.FOOD_TAGS.get().get(Math.min(i, Config.FOOD_TAGS.get().size()-1)))
                     );
 
-                    if (input.getItem().is(key)) {
-                        return input.getItem();
-                    }
+                    if (input.is(key)) return input;
                 }
             }
 
             // if fish type not in FISH_IDS
-            if (!Config.FISH_IDS.get().contains(EntityType.getKey(this.mob.getType()).toString())) {
+            if (!Config.FISH_IDS.get().contains(EntityType.getKey(type).toString())) {
                 TagKey<Item> fishfoodKey = TagKey.create(Registries.ITEM, ResourceLocation.parse("fisheggs:fish_food"));
-                if (input.getItem().is(fishfoodKey)) {
-                    return input.getItem();
-                }
+
+                if (input.is(fishfoodKey)) return input;
             }
 
         } else { // either list is empty
             TagKey<Item> fishfoodKey = TagKey.create(Registries.ITEM, ResourceLocation.parse("fisheggs:fish_food"));
-            if (input.getItem().is(fishfoodKey)) {
-                return input.getItem();
-            }
+
+            if (input.is(fishfoodKey)) return input;
         }
 
         return ItemStack.EMPTY;
@@ -77,7 +74,7 @@ public class SeekFishFoodGoal extends Goal {
     private ItemEntity findNearestFood() {
         List<ItemEntity> entities = this.mob.level().getEntitiesOfClass(
                 ItemEntity.class, this.mob.getBoundingBox().inflate(this.range),
-                itemEntity -> ItemStack.isSameItem(itemEntity.getItem(), getFoodStack(itemEntity)));
+                itemEntity -> ItemStack.isSameItem(itemEntity.getItem(), getFoodStack(itemEntity.getItem(), this.mob.getType())));
 
         ItemEntity food = null;
         double closedSquareDistance = this.range * this.range;
@@ -146,16 +143,20 @@ public class SeekFishFoodGoal extends Goal {
         if (this.mob.distanceToSqr(this.item) < Config.DIST_FOOD.get()) { // 0.75 // 0.6
             if (this.item.getItem().getCount() > 0 && this.mob.getData(FishDataAttachments.FISHINLOVE) == 0) {
                 this.item.getItem().shrink(1);
-                this.mob.setData(FishDataAttachments.FISHINLOVE, Config.LOVE_TIME.get());
+                if (this.mob.level().getRandom().nextInt(100) <= Config.FISH_EAT_BREED_CHANCE.get() * 100)
+                    setLoveState(this.mob);
                 this.mob.getNavigation().stop();
-
-                // particle indicator
-                this.mob.addEffect(new MobEffectInstance(MobEffects.LUCK, Config.LOVE_TIME.get()));
-                this.mob.level().playSound(null, this.mob.getOnPos(), ModSounds.FISH_EATS.get(), SoundSource.NEUTRAL);
             }
         } else {
             this.mob.getNavigation().moveTo(this.item, this.speedModifier);
         }
+    }
 
+    public static void setLoveState(Mob mob) {
+        mob.setData(FishDataAttachments.FISHINLOVE, Config.LOVE_TIME.get());
+
+        // particle indicator
+        mob.addEffect(new MobEffectInstance(MobEffects.LUCK, Config.LOVE_TIME.get()));
+        mob.level().playSound(null, mob.getOnPos(), ModSounds.FISH_EATS.get(), SoundSource.NEUTRAL);
     }
 }

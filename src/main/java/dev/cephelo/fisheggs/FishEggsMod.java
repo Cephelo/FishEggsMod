@@ -127,15 +127,25 @@ public class FishEggsMod {
     public void onBrewingRecipeRegister(RegisterBrewingRecipesEvent event) {
         PotionBrewing.Builder builder = event.getBuilder();
 
-        Item eggs = ModItems.SQUID_EGGS.get();
-        builder.addMix(Potions.AWKWARD, eggs, Potions.WATER_BREATHING);
-        builder.addMix(Potions.NIGHT_VISION, Items.GLOW_INK_SAC, ModPotions.GLOWING);
-        builder.addMix(ModPotions.GLOWING, Items.REDSTONE, ModPotions.LONG_GLOWING);
-        builder.addMix(Potions.NIGHT_VISION, Items.INK_SAC, ModPotions.BLINDNESS);
-        builder.addMix(Potions.LONG_NIGHT_VISION, Items.INK_SAC, ModPotions.LONG_BLINDNESS);
-        builder.addMix(ModPotions.BLINDNESS, Items.REDSTONE, ModPotions.LONG_BLINDNESS);
-        builder.addMix(ModPotions.GLOWING, Items.FERMENTED_SPIDER_EYE, Potions.INVISIBILITY);
-        builder.addMix(ModPotions.LONG_GLOWING, Items.FERMENTED_SPIDER_EYE, Potions.LONG_INVISIBILITY);
+        if (Config.ENABLE_WATER_BREATHING_POTIONS.get())
+            builder.addMix(Potions.AWKWARD, ModItems.SQUID_EGGS.get(), Potions.WATER_BREATHING);
+
+        if (Config.ENABLE_GLOWING_POTIONS.get()) {
+            builder.addMix(Potions.NIGHT_VISION, Items.GLOW_INK_SAC, ModPotions.GLOWING);
+            builder.addMix(Potions.LONG_NIGHT_VISION, Items.GLOW_INK_SAC, ModPotions.LONG_GLOWING);
+            builder.addMix(ModPotions.GLOWING, Items.REDSTONE, ModPotions.LONG_GLOWING);
+        }
+
+        if (Config.ENABLE_INVIS_POTIONS.get()) {
+            builder.addMix(ModPotions.GLOWING, Items.FERMENTED_SPIDER_EYE, Potions.INVISIBILITY);
+            builder.addMix(ModPotions.LONG_GLOWING, Items.FERMENTED_SPIDER_EYE, Potions.LONG_INVISIBILITY);
+        }
+
+        if (Config.ENABLE_BLINDNESS_POTIONS.get()) {
+            builder.addMix(Potions.NIGHT_VISION, Items.INK_SAC, ModPotions.BLINDNESS);
+            builder.addMix(Potions.LONG_NIGHT_VISION, Items.INK_SAC, ModPotions.LONG_BLINDNESS);
+            builder.addMix(ModPotions.BLINDNESS, Items.REDSTONE, ModPotions.LONG_BLINDNESS);
+        }
     }
 
     @SubscribeEvent
@@ -180,7 +190,7 @@ public class FishEggsMod {
 
             trades.get(5).add((entity, randomSource) -> new MerchantOffer(
                     new ItemCost(ModItems.CALAMARI_SUPREME.get(), 1),
-                    new ItemStack(Items.EMERALD, 8), 2, 30, 0.05f
+                    new ItemStack(Items.EMERALD, 6), 2, 30, 0.05f
             ));
         }
     }

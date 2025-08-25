@@ -71,7 +71,7 @@ public class Config {
     public static final ModConfigSpec.ConfigValue<List<? extends String>> FISH_IDS = BUILDER
             .comment("\n List of Entity IDs - each entry corresponds with the entry of fishFood_itemTags with the same index." +
                     "\n   If entry index is greater than fishFood_itemTags length, will retrieve last entry in fishFood_itemTags. \n" +
-                    "\n   Must be instance of AbstractFish.  If an entity ID is not defined here, the default tag fisheggs:fish_food will be used." +
+                    "\n   Must be instance of AbstractFish class.  If an entity ID is not defined here, the default tag fisheggs:fish_food will be used." +
                     "\n   If this list is empty, the tag fisheggs:fish_food will be used by default.")
             .defineListAllowEmpty("fishFood_fishIDs", List.of("minecraft:cod", "minecraft:salmon"), () -> "", Config::validateEntityType);
 
@@ -227,6 +227,65 @@ public class Config {
     public static final ModConfigSpec.BooleanValue CONSUME_PREY = BUILDER
             .comment("\n Whether Squid should completely consume prey with 1hp remaining; disable to have them kill prey normally")
             .define("squidConsumeWeakPrey", true);
+
+    public static final ModConfigSpec.ConfigValue<List<? extends String>> SQUID_IDS = BUILDER
+            .comment("\n List of Entity IDs - each entry corresponds with the entry of squidFood_itemTags with the same index." +
+                    "\n   If entry index is greater than squidFood_itemTags length, will retrieve last entry in squidFood_itemTags. \n" +
+                    "\n   Must be instance of Squid class.  If an entity ID is not defined here, the default tag fisheggs:squid_food will be used." +
+                    "\n   If this list is empty, the tag fisheggs:squid_food will be used by default." +
+                    "\n   Note that these lists only make changes if \"squidCanBeHandFed\" is true.")
+            .defineListAllowEmpty("squidFood_squidIDs", List.of("minecraft:glow_squid"), () -> "", Config::validateEntityType);
+
+    public static final ModConfigSpec.ConfigValue<List<? extends String>> SQUID_FOOD_TAGS = BUILDER
+            .comment("\n List of item tags - each entry corresponds with the entry of squidFood_squidIDs with the same index." +
+                    "\n   If entry index is greater than squidFood_squidIDs length, will retrieve last entry in squidFood_squidIDs." +
+                    "\n   If this list is empty, the tag fisheggs:squid_food will be used by default." +
+                    "\n   Note that these lists only make changes if \"squidCanBeHandFed\" is true.")
+            .defineListAllowEmpty("squidFood_itemTags", List.of("fisheggs:squid_food"), () -> "", Config::alwaysTrue);
+
+    public static final ModConfigSpec.BooleanValue SQUID_HANDFED_PREY = BUILDER
+            .comment("\n Whether Squid should completely consume prey with 1hp remaining; disable to have them kill prey normally")
+            .define("squidCanBeHandFed", true);
+
+    public static final ModConfigSpec.BooleanValue FISH_HANDFED_PREY = BUILDER
+            .comment("\n Whether fish should completely consume prey with 1hp remaining; disable to have them kill prey normally")
+            .define("fishCanBeHandFed", false);
+
+    public static final ModConfigSpec.ConfigValue<List<? extends String>> AXOLOTL_BREED_BLACKLIST = BUILDER
+            .comment("\n List of Entity IDs - when an axolotl kills one of these, it will go into breeding mode")
+            .defineListAllowEmpty("preyBreedBlacklist", List.of("minecraft:tropical_fish"), () -> "", Config::validateEntityType);
+
+    public static final ModConfigSpec.BooleanValue AXOLOTL_BREED_BLACKLIST_IS_WHITELIST = BUILDER
+            .comment("\n Whether preyBlacklist should act as a whitelist rather than a blacklist")
+            .define("preyBreedBlacklistIsWhitelist", true);
+
+    public static final ModConfigSpec.DoubleValue AXOLOTL_HUNT_BREED_CHANCE = BUILDER
+            .comment("\n The chance an axolotl will enter breeding mode upon killing any entity in preyBreedBlacklist")
+            .defineInRange("axolotlBreedChanceAfterHunting", 0.5, 0.0, 1.0);
+
+    public static final ModConfigSpec.DoubleValue SQUID_HUNT_BREED_CHANCE = BUILDER
+            .comment("\n The chance a squid will enter breeding mode upon killing any entity in LISTNAME")
+            .defineInRange("squidBreedChanceAfterHunting", 0.75, 0.0, 1.0);
+
+    public static final ModConfigSpec.DoubleValue FISH_EAT_BREED_CHANCE = BUILDER
+            .comment("\n The chance a fish will enter breeding mode upon eating its matching breeding item")
+            .defineInRange("fishBreedChanceAfterScavenging", 1.0, 0.0, 1.0);
+
+    public static final ModConfigSpec.BooleanValue ENABLE_GLOWING_POTIONS = BUILDER
+            .comment("\n Enable Glowing Potion recipes")
+            .define("enableGlowingPotionRecipes", true);
+
+    public static final ModConfigSpec.BooleanValue ENABLE_INVIS_POTIONS = BUILDER
+            .comment("\n Enable Invisibility Potions from Glowing Potions recipes")
+            .define("enableInvisFromGlowingPotionRecipes", true);
+
+    public static final ModConfigSpec.BooleanValue ENABLE_BLINDNESS_POTIONS = BUILDER
+            .comment("\n Enable Blindness Potion recipes")
+            .define("enableBlindnessPotionRecipes", true);
+
+    public static final ModConfigSpec.BooleanValue ENABLE_WATER_BREATHING_POTIONS = BUILDER
+            .comment("\n Enable Blindness Potion recipes")
+            .define("enableWaterBreathingPotionRecipes", true);
 
     public static final ModConfigSpec.ConfigValue<String> MAGIC_NUMBER_INTRODUCTION = BUILDER
             .comment("What you want the introduction message to be for the magic number")
