@@ -90,12 +90,12 @@ public class SquidHuntGoal extends Goal {
         return blacklistContainsSquid(this.animal.getType());
     }
 
-    public static boolean blacklistContainsSquid(EntityType type) {
+    private static boolean blacklistContainsSquid(EntityType type) {
         return !(Config.CANHUNT_BLACKLIST.get().contains(EntityType.getKey(type).toString())
                 == Config.CANHUNT_BLACKLIST_IS_WHITELIST.get());
     }
 
-    public static boolean blacklistContainsPrey(EntityType type) {
+    private static boolean blacklistContainsPrey(EntityType type) {
         return Config.HUNT_BLACKLIST.get().contains(EntityType.getKey(type).toString())
                 == !Config.HUNT_BLACKLIST_IS_WHITELIST.get();
     }
@@ -149,16 +149,16 @@ public class SquidHuntGoal extends Goal {
         level.playSound(null, this.animal.getOnPos(), ModSounds.SQUID_EATS.get(), SoundSource.NEUTRAL, 1.0f, 0.5f);
         if (this.animal.isBaby()) return;
 
-        if (Config.CONSUME_PREY.get())
-            this.prey.discard();
+        if (this.prey.getHealth() <= Config.CONSUME_PREY.get()) {
+            if (Config.CONSUME_PREY.get() > 0) this.prey.discard();
 
-        if (this.prey.getHealth() <= (Config.CONSUME_PREY.get() ? 1 : 0))
             if (level.getRandom().nextInt(100) <= Config.SQUID_HUNT_BREED_CHANCE.get() * 100) {
                 if (tooManySquids()) {
                     animal.addEffect(new MobEffectInstance(MobEffects.UNLUCK, 400));
                 } else setLoveState(this.animal);
                 stop();
             }
+        }
 
     }
 

@@ -9,6 +9,7 @@ import dev.cephelo.fisheggs.sound.ModSounds;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
@@ -58,13 +59,17 @@ public class FishBreedGoal extends Goal {
         return this.partner.isAlive() && inLove(this.animal) && this.loveTime < 60 && !this.partner.isPanicking();
     }
 
+    public void start() {
+        if (cannotBreed()) stop();
+    }
+
     public void stop() {
         this.partner = null;
         this.loveTime = 0;
     }
 
     public void tick() {
-        if (this.partner == null || SeekFishFoodGoal.blacklistContains(this.animal.getType())) return;
+        if (this.partner == null) return;
 
         this.animal.getLookControl().setLookAt(this.partner, 10.0F, (float)this.animal.getMaxHeadXRot());
         this.animal.getNavigation().moveTo(this.partner, this.speedModifier);
@@ -74,6 +79,16 @@ public class FishBreedGoal extends Goal {
             if (canUse()) this.breed();
         }
 
+    }
+
+    private boolean cannotBreed() {
+        if (!inLove(this.animal) || this.animal.getData(FishDataAttachments.BREED_COOLDOWN) > 0) return true;
+        return blacklistContains(this.animal.getType());
+    }
+
+    private static boolean blacklistContains(EntityType type) {
+        return Config.FISH_BREED_BLACKLIST.get().contains(EntityType.getKey(type).toString())
+                == !Config.FISH_BREED_BLACKLIST_IS_WHITELIST.get();
     }
 
     @Nullable

@@ -8,6 +8,7 @@ import dev.cephelo.fisheggs.sound.ModSounds;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
@@ -55,6 +56,7 @@ public class SquidBreedGoal extends Goal {
     }
 
     public void start() {
+        if (cannotBreed()) stop();
         this.animal.setData(FishDataAttachments.HAS_TARGET.get(), true);
     }
 
@@ -83,6 +85,16 @@ public class SquidBreedGoal extends Goal {
             if (canUse()) this.breed();
         }
 
+    }
+
+    private boolean cannotBreed() {
+        if (!inLove(this.animal) || this.animal.getData(FishDataAttachments.BREED_COOLDOWN) > 0) return true;
+        return blacklistContainsSquid(this.animal.getType());
+    }
+
+    private static boolean blacklistContainsSquid(EntityType type) {
+        return !(Config.SQUID_BREED_BLACKLIST.get().contains(EntityType.getKey(type).toString())
+                == Config.SQUID_BREED_BLACKLIST_IS_WHITELIST.get());
     }
 
     @Nullable

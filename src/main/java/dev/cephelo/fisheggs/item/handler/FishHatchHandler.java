@@ -42,9 +42,11 @@ public class FishHatchHandler {
     );
 
     private static TropicalFish.Pattern mutatePattern(TropicalFish.Pattern pattern1, TropicalFish.Pattern pattern2) {
+        // Random size
         TropicalFish.Base size = pattern1.base();
         if (size != pattern2.base() && r.nextInt(2) == 1) size = pattern2.base();
 
+        // Random style
         int randomParentStyle = r.nextInt(2) == 1 ? patterns.indexOf(pattern1) : patterns.indexOf(pattern2);
         if (randomParentStyle > 5) randomParentStyle = randomParentStyle - 6;
 
@@ -59,7 +61,7 @@ public class FishHatchHandler {
         possiblePatterns.add(pattern1);
         possiblePatterns.add(pattern2);
 
-        if (Config.TROPICAL_PATTERN_MUTATION.get()) {
+        for (int i = 0; i < Config.TROPICAL_PATTERN_MUTATION.get(); i++) {
             TropicalFish.Pattern mutation = mutatePattern(pattern1, pattern2);
             possiblePatterns.add(mutation);
         }

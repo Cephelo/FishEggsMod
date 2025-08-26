@@ -93,7 +93,7 @@ public class SeekFishFoodGoal extends Goal {
                 > Config.FISH_PREVENT_LOVE_AMOUNT.get();
     }
 
-    public static boolean blacklistContains(EntityType type) {
+    private static boolean blacklistContains(EntityType type) {
         return Config.FISH_BLACKLIST.get().contains(EntityType.getKey(type).toString())
                 == !Config.FISH_BLACKLIST_IS_WHITELIST.get();
     }

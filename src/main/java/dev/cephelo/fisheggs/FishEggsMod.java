@@ -94,14 +94,17 @@ public class FishEggsMod {
 
     @SubscribeEvent
     public void addAdditionalGoals(EntityJoinLevelEvent event) {
-        if (!Config.DISABLE_FISH_GOALS.get() && event.getEntity() instanceof AbstractFish fish) {
-            fish.targetSelector.addGoal(1, new FishBreedGoal(fish, 1.3));
-            fish.targetSelector.addGoal(3, new SeekFishFoodGoal(fish, 1.3));
+        if (event.getEntity() instanceof AbstractFish fish) {
+            if (!Config.DISABLE_FISH_BREEDING.get())
+                fish.targetSelector.addGoal(1, new FishBreedGoal(fish, 1.3));
+            if (!Config.DISABLE_FISH_HUNTING.get())
+                fish.targetSelector.addGoal(3, new SeekFishFoodGoal(fish, 1.3));
         }
-        if (!Config.DISABLE_SQUID_GOALS.get() && event.getEntity() instanceof Squid squid) {
-            squid.setData(FishDataAttachments.HAS_TARGET, false);
-            squid.goalSelector.addGoal(-1, new SquidBreedGoal(squid));
-            squid.goalSelector.addGoal(-1, new SquidHuntGoal(squid));
+        if (event.getEntity() instanceof Squid squid) {
+            if (!Config.DISABLE_SQUID_BREEDING.get())
+                squid.goalSelector.addGoal(-1, new SquidBreedGoal(squid));
+            if (!Config.DISABLE_SQUID_HUNTING.get())
+                squid.goalSelector.addGoal(-1, new SquidHuntGoal(squid));
         }
     }
 

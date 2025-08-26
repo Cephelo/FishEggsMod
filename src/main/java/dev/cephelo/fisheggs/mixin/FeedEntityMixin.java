@@ -29,39 +29,32 @@ import java.util.Optional;
 public class FeedEntityMixin {
 
     @Unique
-    private static ItemStack fishEggsMod$getFoodStack(ItemStack input, EntityType type) {
-        if (!Config.SQUID_IDS.get().isEmpty() && !Config.SQUID_FOOD_TAGS.get().isEmpty()) {
+    private static ItemStack fishEggsMod$getFoodStackForSquid(ItemStack input, EntityType type) {
+        if (!Config.SQUID_IDS.get().isEmpty()) {
+            if (!Config.SQUID_FOOD_TAGS.get().isEmpty()) {
+                for (int i = 0; i < Config.SQUID_IDS.get().size(); i++) {
+                    Optional<EntityType<?>> oFish = EntityType.byString(Config.SQUID_IDS.get().get(i));
 
-            for (int i = 0; i < Config.SQUID_IDS.get().size(); i++) {
-                Optional<EntityType<?>> oFish = EntityType.byString(Config.SQUID_IDS.get().get(i));
+                    if (oFish.isPresent() && type == oFish.get()) {
+                        TagKey<Item> key = TagKey.create(Registries.ITEM,
+                                ResourceLocation.parse(Config.SQUID_FOOD_TAGS.get().get(Math.min(i, Config.SQUID_FOOD_TAGS.get().size()-1)))
+                        );
 
-                if (oFish.isPresent() && type == oFish.get()) {
-                    TagKey<Item> key = TagKey.create(Registries.ITEM,
-                            ResourceLocation.parse(Config.SQUID_FOOD_TAGS.get().get(Math.min(i, Config.SQUID_FOOD_TAGS.get().size()-1)))
-                    );
-
-                    if (input.is(key)) return input;
+                        if (input.is(key)) return input;
+                    }
                 }
-            }
-
-            // if fish type not in SQUID_IDS
-            if (!Config.SQUID_IDS.get().contains(EntityType.getKey(type).toString())) {
+            } else { // food tags list is empty
                 TagKey<Item> fishfoodKey = TagKey.create(Registries.ITEM, ResourceLocation.parse("fisheggs:squid_food"));
 
                 if (input.is(fishfoodKey)) return input;
             }
-
-        } else { // either list is empty
-            TagKey<Item> fishfoodKey = TagKey.create(Registries.ITEM, ResourceLocation.parse("fisheggs:squid_food"));
-
-            if (input.is(fishfoodKey)) return input;
         }
 
         return ItemStack.EMPTY;
     }
 
     @Unique
-    private static void fishEggsMod$consumeItem(Player player, InteractionHand hand, ItemStack stack) {
+    private static void fishEggsMod$consumeItemInHand(Player player, InteractionHand hand, ItemStack stack) {
         if (!player.hasInfiniteMaterials()) {
             if (player.getItemInHand(hand).getItem() instanceof BucketItem) {
                 player.getItemInHand(hand).shrink(1);
@@ -75,7 +68,12 @@ public class FeedEntityMixin {
     @Inject(method = "mobInteract", at = @At("HEAD"), cancellable = true)
     protected void mobInteract(Player player, InteractionHand hand, CallbackInfoReturnable<InteractionResult> cir) {
         if ((Object)this instanceof AbstractFish fish) {
-            if (!Config.FISH_HANDFED_PREY.get()) return;
+
+            // blacklistContains (handfed)
+            if (Config.FISH_HANDFED_BLACKLIST.get().contains(EntityType.getKey(fish.getType()).toString())
+                    == !Config.FISH_HANDFED_BLACKLIST_IS_WHITELIST.get()) {
+                return;
+            }
 
             if (fish.getData(FishDataAttachments.FISHINLOVE) > 0
                 || fish.getData(FishDataAttachments.BREED_COOLDOWN) > 0) return;
@@ -84,22 +82,20 @@ public class FeedEntityMixin {
             if (!stack.isEmpty()) {
                 SeekFishFoodGoal.setLoveState(fish);
                 fish.level().playSound(null, fish.getOnPos(), ModSounds.FISH_EATS.get(), SoundSource.NEUTRAL);
-                fishEggsMod$consumeItem(player, hand, stack);
+                fishEggsMod$consumeItemInHand(player, hand, stack);
                 cir.cancel();
             }
         }
 
         if ((Object)this instanceof Squid squid) {
-            if (!Config.SQUID_HANDFED_PREY.get()) return;
-
             if (squid.isBaby() || squid.getData(FishDataAttachments.FISHINLOVE) > 0
                     || squid.getData(FishDataAttachments.BREED_COOLDOWN) > 0) return;
 
-            ItemStack stack = fishEggsMod$getFoodStack(player.getItemInHand(hand), squid.getType());
+            ItemStack stack = fishEggsMod$getFoodStackForSquid(player.getItemInHand(hand), squid.getType());
             if (!stack.isEmpty()) {
                 SquidHuntGoal.setLoveState(squid);
                 squid.level().playSound(null, squid.getOnPos(), ModSounds.SQUID_EATS.get(), SoundSource.NEUTRAL, 1.0f, 0.5f);
-                fishEggsMod$consumeItem(player, hand, stack);
+                fishEggsMod$consumeItemInHand(player, hand, stack);
                 cir.setReturnValue(InteractionResult.CONSUME);
                 cir.cancel();
             }

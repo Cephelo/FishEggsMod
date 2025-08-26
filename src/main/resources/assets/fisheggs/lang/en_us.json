@@ -31,7 +31,7 @@
   "sounds.fisheggs.squid_eats": "Squid eats",
   "sounds.fisheggs.squid_eggs_hatch": "Squid Eggs hatch",
   "sounds.fisheggs.wand": "Debug Wand dings",
-  "sounds.fisheggs.wand_fail": "Debug Wand dongs",
+  "sounds.fisheggs.wand_fail": "Debug Wand bongs",
   "tooltip.fisheggs.wand": "<Hold Shift>",
   "tooltip.fisheggs.wand_line1": "Right click with Fish/Squid Eggs in offhand to duplicate them!",
   "tooltip.fisheggs.wand_line2": "Right click any Fish/Squid to cancel their breeding and hunting cooldowns!",
