@@ -5,7 +5,8 @@
   "mixins": [
     "FeedEntityMixin",
     "AxolotlAutoBreedMixin",
-    "SquidMovementMixin"
+    "SquidMovementMixin",
+    "FishBucketDataMixin"
   ],
   "client": [],
   "injectors": {

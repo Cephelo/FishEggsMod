@@ -1,0 +1,25 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:item_exists",
+      "item": "oceansdelight:cut_tentacles"
+    }
+  ],
+  "type": "farmersdelight:cutting",
+  "ingredients": [
+    {
+      "tag": "fisheggs:squid_tentacles"
+    }
+  ],
+  "result": [
+    {
+      "item": {
+        "count": 3,
+        "id": "oceansdelight:cut_tentacles"
+      }
+    }
+  ],
+  "tool": {
+    "tag": "c:tools/knife"
+  }
+}

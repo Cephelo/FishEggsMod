@@ -9,6 +9,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.AbstractFish;
 import net.minecraft.world.entity.animal.Squid;
@@ -44,8 +45,16 @@ public class WandItem extends Item {
             if (interactionTarget.getData(FishDataAttachments.BREED_COOLDOWN.get()) > 0) {
                 player.swing(usedHand);
                 interactionTarget.setData(FishDataAttachments.BREED_COOLDOWN.get(), 0);
+                interactionTarget.removeEffect(MobEffects.BLINDNESS); // "baby" squids have blindness effect to indicate their baby status
                 player.level().playSound(null, player.blockPosition(), ModSounds.WAND_USE.get(), SoundSource.NEUTRAL);
                 return InteractionResult.CONSUME;
+            } else if (interactionTarget.getData(FishDataAttachments.HUNT_COOLDOWN.get()) > 0) {
+                player.swing(usedHand);
+                interactionTarget.setData(FishDataAttachments.HUNT_COOLDOWN.get(), 0);
+                player.level().playSound(null, player.blockPosition(), ModSounds.WAND_USE.get(), SoundSource.NEUTRAL);
+                return InteractionResult.CONSUME;
+            } else{
+                player.level().playSound(null, player.blockPosition(), ModSounds.WAND_FAIL.get(), SoundSource.NEUTRAL);
             }
         }
         return InteractionResult.PASS;
@@ -53,6 +62,9 @@ public class WandItem extends Item {
 
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
-        tooltipComponents.add(Component.translatable("tooltip.fisheggs.wand").withStyle(achatformatting));
+        if (tooltipFlag.hasShiftDown()) {
+            tooltipComponents.add(Component.translatable("tooltip.fisheggs.wand_line1").withStyle(achatformatting));
+            tooltipComponents.add(Component.translatable("tooltip.fisheggs.wand_line2").withStyle(achatformatting));
+        } else tooltipComponents.add(Component.translatable("tooltip.fisheggs.wand").withStyle(achatformatting));
     }
 }
