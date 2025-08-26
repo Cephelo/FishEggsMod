@@ -38,7 +38,7 @@ public class Config {
 
     public static final ModConfigSpec.IntValue CALM_DOWN_TIME = BUILDER
             .comment("\n Ticks that a fish will ignore food after losing sight of their previous food target")
-            .defineInRange("calmdownTime", 30, 0, Integer.MAX_VALUE);
+            .defineInRange("calmdownTime", 600, 0, Integer.MAX_VALUE);
 
     public static final ModConfigSpec.IntValue BREED_COOLDOWN_TIME = BUILDER
             .comment("\n Ticks that a fish will be unable to breed or hunt food after breeding")
@@ -70,7 +70,7 @@ public class Config {
 
     public static final ModConfigSpec.ConfigValue<List<? extends String>> FISH_IDS = BUILDER
             .comment("\n List of Entity IDs - each entry corresponds with the entry of fishFood_itemTags with the same index." +
-                    "\n   If entry index is greater than fishFood_itemTags length, will retrieve last entry in fishFood_itemTags. \n" +
+                    "\n   If entry index is greater than fishFood_itemTags length, will retrieve last entry in fishFood_itemTags." +
                     "\n   Must be instance of AbstractFish class.  If an entity ID is not defined here, the default tag fisheggs:fish_food will be used." +
                     "\n   If this list is empty, the tag fisheggs:fish_food will be used by default.")
             .defineListAllowEmpty("fishFood_fishIDs", List.of("minecraft:cod", "minecraft:salmon"), () -> "", Config::validateEntityType);
@@ -131,7 +131,7 @@ public class Config {
 
     public static final ModConfigSpec.ConfigValue<List<? extends String>> CANHUNT_BLACKLIST = BUILDER
             .comment("\n List of Entity IDs - Squids that cannot hunt for prey")
-            .defineListAllowEmpty("huntBlacklist", List.of(""), () -> "", Config::validateEntityType);
+            .defineListAllowEmpty("huntBlacklist", List.of(), () -> "", Config::validateEntityType);
 
     public static final ModConfigSpec.BooleanValue CANHUNT_BLACKLIST_IS_WHITELIST = BUILDER
             .comment("\n Whether huntBlacklist should act as a whitelist rather than a blacklist")
@@ -181,7 +181,7 @@ public class Config {
             .defineInRange("squidBreedCooldownTime", 6000, 0, Integer.MAX_VALUE);
 
     public static final ModConfigSpec.IntValue SQUID_HATCH_BREED_COOLDOWN_TIME = BUILDER
-            .comment("\n Ticks that a squid will be unable to breed or hunt food after hatcing (baby squids don't exist in 1.21.1)")
+            .comment("\n Ticks that a squid will be unable to breed or hunt food after hatching (baby squids don't exist in 1.21.1)")
             .defineInRange("squidHatchBreedCooldownTime", 24000, 0, Integer.MAX_VALUE);
 
     public static final ModConfigSpec.IntValue SQUID_HATCH_TIME = BUILDER
@@ -230,7 +230,7 @@ public class Config {
 
     public static final ModConfigSpec.ConfigValue<List<? extends String>> SQUID_IDS = BUILDER
             .comment("\n List of Entity IDs - each entry corresponds with the entry of squidFood_itemTags with the same index." +
-                    "\n   If entry index is greater than squidFood_itemTags length, will retrieve last entry in squidFood_itemTags. \n" +
+                    "\n   If entry index is greater than squidFood_itemTags length, will retrieve last entry in squidFood_itemTags." +
                     "\n   Must be instance of Squid class.  If an entity ID is not defined here, the default tag fisheggs:squid_food will be used." +
                     "\n   If this list is empty, the tag fisheggs:squid_food will be used by default." +
                     "\n   Note that these lists only make changes if \"squidCanBeHandFed\" is true.")
@@ -287,14 +287,40 @@ public class Config {
             .comment("\n Enable Blindness Potion recipes")
             .define("enableWaterBreathingPotionRecipes", true);
 
-    public static final ModConfigSpec.ConfigValue<String> MAGIC_NUMBER_INTRODUCTION = BUILDER
-            .comment("What you want the introduction message to be for the magic number")
-            .define("magicNumberIntroduction", "The magic number is... ");
+    public static final ModConfigSpec.DoubleValue SQUID_PREVENT_LOVE_RADIUS = BUILDER
+            .comment("\n The chance a fish will enter breeding mode upon eating its matching breeding item")
+            .defineInRange("squidPreventLoveRadius", 8.0, 0.0, 64.0);
 
-    // a list of strings that are treated as resource locations for items
-    public static final ModConfigSpec.ConfigValue<List<? extends String>> ITEM_STRINGS = BUILDER
-            .comment("A list of items to log on common setup.")
-            .defineListAllowEmpty("items", List.of("minecraft:iron_ingot"), () -> "", Config::validateItemName);
+    public static final ModConfigSpec.IntValue SQUID_PREVENT_LOVE_AMOUNT = BUILDER
+            .comment("\n If there are more than this number of Squids within the squidPreventLoveRadius blocks, " +
+                     "\n   the Squid will not enter love mode after a successful hunt.")
+            .defineInRange("squidPreventLoveLimit", 16, 0, Integer.MAX_VALUE);
+
+    public static final ModConfigSpec.BooleanValue SQUID_PREVENT_LOVE_HUNT = BUILDER
+            .comment("\n Whether squidPreventLoveRadius stops Squid from hunting altogether rather than just entering love mode.")
+            .define("squidPreventLoveHunt", false);
+
+    public static final ModConfigSpec.DoubleValue FISH_PREVENT_LOVE_RADIUS = BUILDER
+            .comment("\n The chance a fish will enter breeding mode upon eating its matching breeding item")
+            .defineInRange("fishPreventLoveRadius", 6.0, 0.0, 64.0);
+
+    public static final ModConfigSpec.IntValue FISH_PREVENT_LOVE_AMOUNT = BUILDER
+            .comment("\n If there are more than this number of Squids within the fishPreventLoveRadius blocks, " +
+                     "\n   the Fish will not enter love mode after eating.")
+            .defineInRange("fishPreventLoveLimit", 128, 0, Integer.MAX_VALUE);
+
+    public static final ModConfigSpec.BooleanValue FISH_PREVENT_LOVE_HUNT = BUILDER
+            .comment("\n Whether fishPreventLoveRadius stops Fish from chasing food altogether rather than just entering love mode.")
+            .define("fishPreventLoveHunt", false);
+
+    public static final ModConfigSpec.DoubleValue AXOLOTL_PREVENT_LOVE_RADIUS = BUILDER
+            .comment("\n The chance a fish will enter breeding mode upon eating its matching breeding item")
+            .defineInRange("axolotlPreventLoveRadius", 12.0, 0.0, 64.0);
+
+    public static final ModConfigSpec.IntValue AXOLOTL_PREVENT_LOVE_AMOUNT = BUILDER
+            .comment("\n If there are more than this number of Axolotls within the axolotlPreventLoveRadius blocks, " +
+                     "\n   the Axolotl will not enter love mode after a successful hunt.")
+            .defineInRange("axolotlPreventLoveLimit", 24, 0, Integer.MAX_VALUE);
 
     static final ModConfigSpec SPEC = BUILDER.build();
 
@@ -304,10 +330,6 @@ public class Config {
 
     private static boolean alwaysTrue(final Object obj) {
         return true;
-    }
-
-    private static boolean validateItemName(final Object obj) {
-        return obj instanceof String itemName && BuiltInRegistries.ITEM.containsKey(ResourceLocation.parse(itemName));
     }
 
     private static boolean validateColor(final Object obj) {

@@ -4,9 +4,9 @@
     "calamari_supreme": {
       "trigger": "minecraft:consume_item",
       "conditions": {
-        "items": [{
+        "item": {
             "items": "fisheggs:calamari_supreme"
-          }]
+          }
       }
     }
   },

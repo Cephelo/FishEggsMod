@@ -14,6 +14,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.animal.AbstractFish;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -29,7 +30,6 @@ public class SeekFishFoodGoal extends Goal {
     private final double speedModifier;
     @Nullable
     protected ItemEntity item;
-    private int calmDown;
     private final double range;
 
     public SeekFishFoodGoal(PathfinderMob mob, double speedModifier) {
@@ -88,6 +88,11 @@ public class SeekFishFoodGoal extends Goal {
         return food;
     }
 
+    private boolean tooManyFish() {
+        return this.mob.level().getEntitiesOfClass(AbstractFish.class, this.mob.getBoundingBox().inflate(Config.FISH_PREVENT_LOVE_RADIUS.get())).size()
+                > Config.FISH_PREVENT_LOVE_AMOUNT.get();
+    }
+
     public static boolean blacklistContains(EntityType type) {
         return Config.FISH_BLACKLIST.get().contains(EntityType.getKey(type).toString())
                 == !Config.FISH_BLACKLIST_IS_WHITELIST.get();
@@ -96,6 +101,7 @@ public class SeekFishFoodGoal extends Goal {
     private boolean cannotEat() {
         //FishEggsMod.LOGGER.info("id {}, match {}, list {}", EntityType.getKey(this.mob.getType()).toString(), blacklistContains(this.mob.getType()), Config.FISH_BLACKLIST.get());
         if (blacklistContains(this.mob.getType())) return true;
+        if (Config.FISH_PREVENT_LOVE_HUNT.get() && tooManyFish()) return true;
         return this.mob.getData(FishDataAttachments.FISHINLOVE) > 0 || this.mob.getData(FishDataAttachments.BREED_COOLDOWN) > 0;
     }
 
@@ -103,8 +109,7 @@ public class SeekFishFoodGoal extends Goal {
     public boolean canUse() {
         if (cannotEat()) return false;
 
-        if (this.calmDown > 0) {
-            --this.calmDown;
+        if (this.mob.getData(FishDataAttachments.HUNT_COOLDOWN) > 0) {
             return false;
         } else {
             this.item = this.findNearestFood();
@@ -127,7 +132,7 @@ public class SeekFishFoodGoal extends Goal {
         //FishEggsMod.LOGGER.info("stop seek");
         this.item = null;
         this.mob.getNavigation().stop();
-        this.calmDown = reducedTickDelay(Config.CALM_DOWN_TIME.get());
+        this.mob.setData(FishDataAttachments.HUNT_COOLDOWN, reducedTickDelay(Config.CALM_DOWN_TIME.get()));
     }
 
     @Override
@@ -143,9 +148,15 @@ public class SeekFishFoodGoal extends Goal {
         if (this.mob.distanceToSqr(this.item) < Config.DIST_FOOD.get()) { // 0.75 // 0.6
             if (this.item.getItem().getCount() > 0 && this.mob.getData(FishDataAttachments.FISHINLOVE) == 0) {
                 this.item.getItem().shrink(1);
-                if (this.mob.level().getRandom().nextInt(100) <= Config.FISH_EAT_BREED_CHANCE.get() * 100)
-                    setLoveState(this.mob);
+                mob.level().playSound(null, mob.getOnPos(), ModSounds.FISH_EATS.get(), SoundSource.NEUTRAL);
+
+                if (this.mob.level().getRandom().nextInt(100) <= Config.FISH_EAT_BREED_CHANCE.get() * 100) {
+                    if (tooManyFish()) {
+                        mob.addEffect(new MobEffectInstance(MobEffects.UNLUCK, 400));
+                    } else setLoveState(this.mob);
+                }
                 this.mob.getNavigation().stop();
+                stop();
             }
         } else {
             this.mob.getNavigation().moveTo(this.item, this.speedModifier);
@@ -157,6 +168,6 @@ public class SeekFishFoodGoal extends Goal {
 
         // particle indicator
         mob.addEffect(new MobEffectInstance(MobEffects.LUCK, Config.LOVE_TIME.get()));
-        mob.level().playSound(null, mob.getOnPos(), ModSounds.FISH_EATS.get(), SoundSource.NEUTRAL);
+        mob.removeEffect(MobEffects.UNLUCK);
     }
 }

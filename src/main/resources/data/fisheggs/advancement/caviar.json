@@ -4,9 +4,9 @@
     "eat_eggs": {
       "trigger": "minecraft:consume_item",
       "conditions": {
-        "items": [{
+        "item": {
             "items": "fisheggs:fish_eggs"
-          }]
+          }
       }
     }
   },

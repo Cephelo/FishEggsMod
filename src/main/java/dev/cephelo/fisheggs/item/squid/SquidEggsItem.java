@@ -69,7 +69,7 @@ public class SquidEggsItem extends Item {
             if (thing != null) {
                 thing.setData(FishDataAttachments.BREED_COOLDOWN, Config.SQUID_HATCH_BREED_COOLDOWN_TIME.get());
                 if (thing instanceof Mob mob) {
-                    mob.addEffect(new MobEffectInstance(MobEffects.DARKNESS, Config.SQUID_HATCH_BREED_COOLDOWN_TIME.get()));
+                    mob.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, Config.SQUID_HATCH_BREED_COOLDOWN_TIME.get()));
                     if (!Config.SQUID_HATCHED_CAN_DESPAWN.get())
                         mob.setPersistenceRequired();
                 }

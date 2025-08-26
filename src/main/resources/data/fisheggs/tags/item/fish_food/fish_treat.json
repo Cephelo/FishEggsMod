@@ -1,8 +1,14 @@
 {
   "values": [
-    "#c:foods/raw_fish",
+    {
+      "id": "#fisheggs:fish_food/fish",
+      "required": false
+    },
     "minecraft:bone_meal",
-    "#c:eggs",
+    {
+      "id": "#c:eggs",
+      "required": false
+    },
     "minecraft:turtle_egg",
     "minecraft:spider_eye",
     "minecraft:sea_pickle",

@@ -29,7 +29,6 @@ public class SquidHuntGoal extends Goal {
     protected final Level level;
     @Nullable
     protected PathfinderMob prey;
-    private int calmDown;
 
     public SquidHuntGoal(Squid animal) {
         this(animal, PathfinderMob.class);
@@ -42,12 +41,18 @@ public class SquidHuntGoal extends Goal {
         this.setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
     }
 
+    private boolean tooManySquids() {
+        return this.level.getNearbyEntities(Squid.class, PARTNER_TARGETING, this.animal, this.animal.getBoundingBox().inflate(Config.SQUID_PREVENT_LOVE_RADIUS.get())).size()
+                > Config.SQUID_PREVENT_LOVE_AMOUNT.get();
+    }
+
     public boolean canUse() {
-        if (this.calmDown > 0) {
-            --this.calmDown;
+        if (this.animal.getData(FishDataAttachments.HUNT_COOLDOWN) > 0) {
             return false;
         } else if (this.animal.getData(FishDataAttachments.FISHINLOVE) > 0
                 || this.animal.getData(FishDataAttachments.BREED_COOLDOWN) > 0) {
+            return false;
+        } else if (Config.SQUID_PREVENT_LOVE_HUNT.get() && tooManySquids()) {
             return false;
         } else {
             this.prey = this.getFreePartner();
@@ -61,19 +66,33 @@ public class SquidHuntGoal extends Goal {
     }
 
     public void start() {
-        if (!canHunt(this.animal.getType()) || !canUse()) stop();
+        //this.animal.addEffect(new MobEffectInstance(MobEffects.GLOWING, 10000));
+        if (cannotHunt()) stop();
         this.animal.setData(FishDataAttachments.HAS_TARGET.get(), true);
     }
 
     public void stop() {
+        //this.animal.removeEffect(MobEffects.GLOWING);
         this.prey = null;
-        this.calmDown = reducedTickDelay(Config.SQUID_CALM_DOWN_TIME.get());
+        this.animal.setData(FishDataAttachments.HUNT_COOLDOWN, reducedTickDelay(Config.SQUID_CALM_DOWN_TIME.get()));
         this.animal.setData(FishDataAttachments.HAS_TARGET.get(), false);
     }
 
-    public static boolean canHunt(EntityType type) {
-        return Config.CANHUNT_BLACKLIST.get().contains(EntityType.getKey(type).toString())
-                == Config.CANHUNT_BLACKLIST_IS_WHITELIST.get();
+    private boolean cannotHunt() {
+        if (this.animal.getData(FishDataAttachments.HUNT_COOLDOWN) > 0) {
+            return true;
+        } else if (this.animal.getData(FishDataAttachments.FISHINLOVE) > 0
+                || this.animal.getData(FishDataAttachments.BREED_COOLDOWN) > 0) {
+            return true;
+        } else if (Config.SQUID_PREVENT_LOVE_HUNT.get() && tooManySquids()) {
+            return true;
+        }
+        return blacklistContainsSquid(this.animal.getType());
+    }
+
+    public static boolean blacklistContainsSquid(EntityType type) {
+        return !(Config.CANHUNT_BLACKLIST.get().contains(EntityType.getKey(type).toString())
+                == Config.CANHUNT_BLACKLIST_IS_WHITELIST.get());
     }
 
     public static boolean blacklistContainsPrey(EntityType type) {
@@ -134,12 +153,20 @@ public class SquidHuntGoal extends Goal {
             this.prey.discard();
 
         if (this.prey.getHealth() <= (Config.CONSUME_PREY.get() ? 1 : 0))
-            if (level.getRandom().nextInt(100) <= Config.SQUID_HUNT_BREED_CHANCE.get() * 100)
-                setLoveState(this.animal);
+            if (level.getRandom().nextInt(100) <= Config.SQUID_HUNT_BREED_CHANCE.get() * 100) {
+                if (tooManySquids()) {
+                    animal.addEffect(new MobEffectInstance(MobEffects.UNLUCK, 400));
+                } else setLoveState(this.animal);
+                stop();
+            }
+
     }
 
-    public static void setLoveState(Mob animal) {
-        animal.setData(FishDataAttachments.FISHINLOVE, Config.SQUID_LOVE_TIME.get());
-        animal.addEffect(new MobEffectInstance(MobEffects.LUCK, Config.SQUID_LOVE_TIME.get()));
+    public static void setLoveState(Mob mob) {
+        mob.setData(FishDataAttachments.FISHINLOVE, Config.SQUID_LOVE_TIME.get());
+
+        // particle indicator
+        mob.addEffect(new MobEffectInstance(MobEffects.LUCK, Config.SQUID_LOVE_TIME.get()));
+        mob.removeEffect(MobEffects.UNLUCK);
     }
 }

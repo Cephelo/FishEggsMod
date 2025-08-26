@@ -13,6 +13,8 @@ import dev.cephelo.fisheggs.item.handler.FishHatchHandler;
 import dev.cephelo.fisheggs.potion.ModPotions;
 import dev.cephelo.fisheggs.sound.ModSounds;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.AbstractFish;
@@ -108,6 +110,8 @@ public class FishEggsMod {
     public void onEntityLivingTick(EntityTickEvent.Post event) {
         if (event.getEntity() instanceof AbstractFish fish) {
             decrementAttachments(fish);
+            // give luck effect back when spawned from bucket
+            fish.addEffect(new MobEffectInstance(MobEffects.LUCK, fish.getData(FishDataAttachments.FISHINLOVE)));
         } else if (event.getEntity() instanceof Squid squid) {
             decrementAttachments(squid);
         }
@@ -121,6 +125,10 @@ public class FishEggsMod {
         int breedCooldown = entity.getData(FishDataAttachments.BREED_COOLDOWN);
         if (breedCooldown > 0)
             entity.setData(FishDataAttachments.BREED_COOLDOWN, breedCooldown - 1);
+
+        int huntCooldown = entity.getData(FishDataAttachments.HUNT_COOLDOWN);
+        if (huntCooldown > 0)
+            entity.setData(FishDataAttachments.HUNT_COOLDOWN, huntCooldown - 1);
     }
 
     @SubscribeEvent

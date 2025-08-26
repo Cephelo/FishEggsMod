@@ -36,9 +36,9 @@
     "subtitle": "sounds.fisheggs.squid_breeds",
     "sounds": [
       {
-        "name": "entity.cod.hurt",
+        "name": "item.glow_ink_sac.use",
         "type": "event",
-        "pitch": 1.25,
+        "pitch": 2,
         "volume": 0.25
       }
     ]
@@ -58,20 +58,32 @@
     "subtitle": "sounds.fisheggs.squid_eggs_hatch",
     "sounds": [
       {
-        "name": "entity.turtle.egg_crack",
+        "name": "entity.slime.squish",
         "type": "event",
-        "pitch": 2,
-        "volume": 0.5
+        "pitch": 1.25,
+        "volume": 0.25
       }
     ]
   },
   "wand_use": {
+    "subtitle": "sounds.fisheggs.wand",
     "sounds": [
       {
         "name": "entity.experience_orb.pickup",
         "type": "event",
         "pitch": 1.5,
         "volume": 0.2
+      }
+    ]
+  },
+  "wand_fail": {
+    "subtitle": "sounds.fisheggs.wand_fail",
+    "sounds": [
+      {
+        "name": "block.note_block.bass",
+        "type": "event",
+        "pitch": 0.5,
+        "volume": 0.5
       }
     ]
   }

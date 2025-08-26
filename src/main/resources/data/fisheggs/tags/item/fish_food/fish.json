@@ -1,0 +1,16 @@
+{
+  "values": [
+    {
+      "id": "#c:foods/raw_fish",
+      "required": false
+    },
+    {
+      "id": "#crabbersdelight:raw_seafood",
+      "required": false
+    },
+    {
+      "id": "#crabbersdelight:raw_squid",
+      "required": false
+    }
+  ]
+}

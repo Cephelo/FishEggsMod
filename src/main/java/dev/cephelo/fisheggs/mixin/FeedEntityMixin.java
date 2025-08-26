@@ -72,7 +72,7 @@ public class FeedEntityMixin {
         }
     }
 
-    @Inject(method = "mobInteract", at = @At("HEAD"))
+    @Inject(method = "mobInteract", at = @At("HEAD"), cancellable = true)
     protected void mobInteract(Player player, InteractionHand hand, CallbackInfoReturnable<InteractionResult> cir) {
         if ((Object)this instanceof AbstractFish fish) {
             if (!Config.FISH_HANDFED_PREY.get()) return;
@@ -83,7 +83,9 @@ public class FeedEntityMixin {
             ItemStack stack = SeekFishFoodGoal.getFoodStack(player.getItemInHand(hand), fish.getType());
             if (!stack.isEmpty()) {
                 SeekFishFoodGoal.setLoveState(fish);
+                fish.level().playSound(null, fish.getOnPos(), ModSounds.FISH_EATS.get(), SoundSource.NEUTRAL);
                 fishEggsMod$consumeItem(player, hand, stack);
+                cir.cancel();
             }
         }
 
@@ -98,6 +100,8 @@ public class FeedEntityMixin {
                 SquidHuntGoal.setLoveState(squid);
                 squid.level().playSound(null, squid.getOnPos(), ModSounds.SQUID_EATS.get(), SoundSource.NEUTRAL, 1.0f, 0.5f);
                 fishEggsMod$consumeItem(player, hand, stack);
+                cir.setReturnValue(InteractionResult.CONSUME);
+                cir.cancel();
             }
         }
     }

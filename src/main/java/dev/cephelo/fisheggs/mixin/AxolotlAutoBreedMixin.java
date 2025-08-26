@@ -1,7 +1,6 @@
 package dev.cephelo.fisheggs.mixin;
 
 import dev.cephelo.fisheggs.Config;
-import dev.cephelo.fisheggs.FishEggsMod;
 import net.minecraft.world.entity.AgeableMob;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -23,10 +22,12 @@ public class AxolotlAutoBreedMixin {
                 Config.AXOLOTL_BREED_BLACKLIST.get().contains(EntityType.getKey(target.getType()).toString())
                         == Config.AXOLOTL_BREED_BLACKLIST_IS_WHITELIST.get();
 
-        if (target.isDeadOrDying() && listCheck) {
+        boolean tooManyAxolotls = axolotl.level().getEntitiesOfClass(Axolotl.class, axolotl.getBoundingBox().inflate(Config.AXOLOTL_PREVENT_LOVE_RADIUS.get())).size()
+                    > Config.AXOLOTL_PREVENT_LOVE_AMOUNT.get();
+
+        if (target.isDeadOrDying() && listCheck && !tooManyAxolotls) {
             int i = axolotl.getAge();
             if (i == 0 && axolotl.canFallInLove()) {
-                FishEggsMod.LOGGER.info("sex from {}", target.getType());
                 axolotl.setInLove(null);
             }
 

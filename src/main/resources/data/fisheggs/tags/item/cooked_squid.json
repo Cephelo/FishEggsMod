@@ -1,5 +1,9 @@
 {
   "values": [
-    "fisheggs:cooked_squid_tentacle"
+    "fisheggs:cooked_squid_tentacle",
+    {
+      "id": "#crabbersdelight:cooked_squid",
+      "required": false
+    }
   ]
 }

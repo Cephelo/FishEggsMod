@@ -3,7 +3,7 @@
   "category": "misc",
   "ingredients": [
     {
-  	  "tag": "c:foods/raw_fish"
+  	  "tag": "fisheggs:fish_food/fish"
   	},
     {
   	  "tag": "fisheggs:fish_food/plant_matter"

@@ -1,12 +1,14 @@
 package dev.cephelo.fisheggs.item;
 
 import dev.cephelo.fisheggs.FishEggsMod;
+import dev.cephelo.fisheggs.item.custom.EffectTooltipItem;
 import dev.cephelo.fisheggs.item.custom.WandItem;
 import dev.cephelo.fisheggs.item.squid.SquidEggsItem;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Rarity;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -40,13 +42,14 @@ public class ModItems {
 
     public static final DeferredItem<Item> SQUID_TENTACLE = ITEMS.register("squid_tentacle",
             () -> new Item(new Item.Properties()
-                    .food((new FoodProperties.Builder()).nutrition(3).saturationModifier(0.2F).build()))
+                    .food((new FoodProperties.Builder()).nutrition(2).saturationModifier(0.2F).build()))
     );
 
+    static MobEffectInstance glowing = new MobEffectInstance(MobEffects.GLOWING, 300, 0);
     public static final DeferredItem<Item> GLOW_SQUID_TENTACLE = ITEMS.register("glow_squid_tentacle",
-            () -> new Item(new Item.Properties()
-                    .food((new FoodProperties.Builder()).nutrition(3).saturationModifier(0.2F)
-                            .effect(() -> new MobEffectInstance(MobEffects.GLOWING, 300, 0), 1.0F)
+            () -> new EffectTooltipItem(glowing, new Item.Properties()
+                    .food((new FoodProperties.Builder()).nutrition(2).saturationModifier(0.2F)
+                            .effect(() -> glowing, 1.0F)
                             .build()))
     );
 
@@ -55,15 +58,21 @@ public class ModItems {
                     .food((new FoodProperties.Builder()).nutrition(5).saturationModifier(0.6F).build()))
     );
 
+    static MobEffectInstance luck = new MobEffectInstance(MobEffects.LUCK, 3600, 2);
     public static final DeferredItem<Item> CALAMARI_SUPREME = ITEMS.register("calamari_supreme",
-            () -> new Item(new Item.Properties()
+            () -> new EffectTooltipItem(luck, new Item.Properties()
+                    .rarity(Rarity.UNCOMMON)
                     .food((new FoodProperties.Builder()).nutrition(12).saturationModifier(1.25F)
-                            .effect(() -> new MobEffectInstance(MobEffects.LUCK, 1800, 0), 1.0F)
+                            .effect(() -> luck, 1.0F)
+                            .alwaysEdible()
                             .build()))
     );
 
     public static final DeferredItem<Item> WAND = ITEMS.register("wand",
-            () -> new WandItem(new Item.Properties()));
+            () -> new WandItem(new Item.Properties()
+                    .stacksTo(1)
+                    .rarity(Rarity.UNCOMMON)
+            ));
 
     public static void register(IEventBus eventBus) {
         ITEMS.register(eventBus);
