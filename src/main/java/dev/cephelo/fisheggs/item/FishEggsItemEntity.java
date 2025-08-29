@@ -4,12 +4,16 @@ import dev.cephelo.fisheggs.Config;
 import dev.cephelo.fisheggs.item.component.FishEggComponents;
 import dev.cephelo.fisheggs.item.component.ModDataComponents;
 import dev.cephelo.fisheggs.item.handler.FishHatchHandler;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.event.EventHooks;
 
@@ -31,14 +35,19 @@ public class FishEggsItemEntity extends ItemEntity {
         if (!this.level().isClientSide && this.getAge() >= this.lifespan - 1) {
             this.lifespan = Mth.clamp(this.lifespan + EventHooks.onItemExpire(this), 0, 32766);
             if (this.getAge() >= this.lifespan - 1 && this.level() instanceof ServerLevel serverLevel) {
-                if (Config.FISH_EGGS_NEED_WATER.get() && !this.isInWater()) {}
-                else {
-                    for (int i = 0; i < this.getItem().getCount(); i++)
-                        FishHatchHandler.spawnFish(serverLevel, this.getOnPos().above(),
-                                this.getItem().get(ModDataComponents.FE_COMP));
-                }
+                attemptHatchEggs(serverLevel, this);
             }
         }
         super.tick();
+    }
+
+    public static void attemptHatchEggs(ServerLevel serverLevel, FishEggsItemEntity entity) {
+        TagKey<Fluid> allowedFluids = TagKey.create(Registries.FLUID, ResourceLocation.parse("fisheggs:allowed_hatch_fluids"));
+
+        if (!Config.FISH_EGGS_NEED_WATER.get() || serverLevel.getFluidState(entity.getOnPos()).is(allowedFluids)) {
+            for (int i = 0; i < entity.getItem().getCount(); i++)
+                FishHatchHandler.spawnFish(serverLevel, entity.getOnPos().above(),
+                        entity.getItem().get(ModDataComponents.FE_COMP));
+        }
     }
 }

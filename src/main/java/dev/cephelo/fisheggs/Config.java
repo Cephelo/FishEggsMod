@@ -40,13 +40,15 @@ public class Config {
             FISH_PREVENT_LOVE_HUNT,
             SQUID_BREED_BLACKLIST_IS_WHITELIST,
             FISH_HANDFED_BLACKLIST_IS_WHITELIST,
-            FISH_BREED_BLACKLIST_IS_WHITELIST;
+            FISH_BREED_BLACKLIST_IS_WHITELIST,
+            DEBUG_TROPICAL_COLORS;
 
     public static final ModConfigSpec.IntValue
             TROPICAL_PATTERN_MUTATION,
             LOVE_TIME,
             REGEN_TIME,
             CALM_DOWN_TIME,
+            CALM_DOWN_TIME_FAIL,
             BREED_COOLDOWN_TIME,
             HATCH_BREED_COOLDOWN_TIME,
             HATCH_TIME,
@@ -58,6 +60,7 @@ public class Config {
             SQUID_LOVE_TIME,
             SQUID_REGEN_TIME,
             SQUID_CALM_DOWN_TIME,
+            SQUID_CALM_DOWN_TIME_FAIL,
             SQUID_BREED_COOLDOWN_TIME,
             SQUID_HATCH_BREED_COOLDOWN_TIME,
             SQUID_HATCH_TIME,
@@ -82,7 +85,8 @@ public class Config {
             FISH_EAT_BREED_CHANCE,
             SQUID_PREVENT_LOVE_RADIUS,
             FISH_PREVENT_LOVE_RADIUS,
-            AXOLOTL_PREVENT_LOVE_RADIUS;
+            AXOLOTL_PREVENT_LOVE_RADIUS,
+            WAND_BIGUSE_RADIUS;
 
     public static final ModConfigSpec.ConfigValue<List<? extends String>>
             FISH_IDS,
@@ -103,19 +107,22 @@ public class Config {
     static {
         ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
 
+        BUILDER.comment(" IF YOU HAVE ANY SUGGESTIONS FOR MORE CONFIG OPTIONS, LET ME KNOW IN THE MOD PAGE'S COMMENTS, OR IN MY DISCORD! - Cephelo" +
+                "\n Aquatic Breeding Config\n");
+
         // FISH EGGS OPTIONS
         BUILDER.push("Fish Eggs & Hatching");
 
         HATCH_TIME = BUILDER
-                .comment("\n Ticks that Fish Eggs will take to hatch")
-                .defineInRange("fishHatchTime", 100, 1, Integer.MAX_VALUE);
+                .comment(" Ticks that Fish Eggs will take to hatch")
+                .defineInRange("fishHatchTime", 6000, 1, Integer.MAX_VALUE);
 
         MAX_FISH_FROM_EGGS = BUILDER
                 .comment("\n The maximum amount of fish that can hatch from a single Fish Eggs item")
                 .defineInRange("maxFishFromEggs", 3, 1, 16);
 
         FISH_EGGS_NEED_WATER = BUILDER
-                .comment("\n If true, Fish Eggs can only hatch while inside water")
+                .comment("\n If true, Fish Eggs can only hatch while inside allowed fluids (water by default, see fluid tag fisheggs:allowed_hatch_fluids)")
                 .define("fishEggsNeedWater", true);
 
         HATCH_BREED_COOLDOWN_TIME = BUILDER
@@ -141,15 +148,15 @@ public class Config {
         BUILDER.push("Squid Eggs & Hatching");
 
         SQUID_HATCH_TIME = BUILDER
-                .comment("\n Ticks that Squid Eggs will take to hatch")
-                .defineInRange("squidHatchTime", 100, 1, Integer.MAX_VALUE);
+                .comment(" Ticks that Squid Eggs will take to hatch")
+                .defineInRange("squidHatchTime", 6000, 1, Integer.MAX_VALUE);
 
         MAX_SQUID_FROM_EGGS = BUILDER
                 .comment("\n The maximum amount of squid that can hatch from a single Squid Eggs item")
                 .defineInRange("maxSquidFromEggs", 2, 1, 16);
 
         SQUID_EGGS_NEED_WATER = BUILDER
-                .comment("\n If true, Squid Eggs can only hatch while inside water")
+                .comment("\n If true, Squid Eggs can only hatch while inside allowed fluids (water by default, see fluid tag fisheggs:allowed_hatch_fluids)")
                 .define("squidEggsNeedWater", true);
 
         SQUID_HATCH_BREED_COOLDOWN_TIME = BUILDER
@@ -171,7 +178,7 @@ public class Config {
         BUILDER.push("Fish Hunting Behavior");
 
         DISABLE_FISH_HUNTING = BUILDER
-                .comment("\n Completely disable Fish chasing matching food item entities")
+                .comment(" Completely disable Fish chasing matching food item entities")
                 .define("disableFishEatChasingCompletely", false);
 
         FISH_BLACKLIST = BUILDER
@@ -188,11 +195,15 @@ public class Config {
 
         DIST_FOOD = BUILDER
                 .comment("\n The maximum squared distance a fish can consume a food item entity")
-                .defineInRange("fishFoodEatRangeSqr", 1.0, 0.0, 64.0);
+                .defineInRange("fishFoodEatRangeSqr", 1.1, 0.0, 64.0);
 
         CALM_DOWN_TIME = BUILDER
+                .comment("\n Ticks that a fish will ignore food after successfully eating")
+                .defineInRange("fishCalmdownTimeSuccess", 900, 0, Integer.MAX_VALUE);
+
+        CALM_DOWN_TIME_FAIL = BUILDER
                 .comment("\n Ticks that a fish will ignore food after losing sight of their previous food target")
-                .defineInRange("fishCalmdownTime", 600, 0, Integer.MAX_VALUE);
+                .defineInRange("fishCalmdownTimeFail", 60, 0, Integer.MAX_VALUE);
 
         LOVE_TIME = BUILDER
                 .comment("\n Ticks that a fish will be in the love state for after eating or being fed")
@@ -205,7 +216,7 @@ public class Config {
         FISH_PREVENT_LOVE_RADIUS = BUILDER
                 .comment("\n If there are more than fishPreventLoveLimit of Squids within this radius of blocks, " +
                         "\n   the Fish will not enter love mode after eating.")
-                .defineInRange("fishPreventLoveRadius", 6.0, 0.0, 64.0);
+                .defineInRange("fishPreventLoveRadius", 8.0, 0.0, 64.0);
 
         FISH_PREVENT_LOVE_AMOUNT = BUILDER
                 .comment("\n If there are more than this number of Squids within the fishPreventLoveRadius blocks, " +
@@ -230,11 +241,11 @@ public class Config {
 
         FISH_HANDFED_BLACKLIST = BUILDER
                 .comment("\n List of Entity IDs - list of Fish that cannot be handfed.")
-                .defineListAllowEmpty("fishCannotBeHandfed", List.of("minecraft:tadpole"), () -> "", Config::validateEntityType);
+                .defineListAllowEmpty("fishCannotBeHandfed", List.of(), () -> "", Config::validateEntityType);
 
         FISH_HANDFED_BLACKLIST_IS_WHITELIST = BUILDER
                 .comment("\n Whether fishCannotBeHandfed should act as a whitelist rather than a blacklist")
-                .define("fishCannotBeHandfedIsWhitelist", false);
+                .define("fishCannotBeHandfedIsWhitelist", true);
 
         BUILDER.pop();
 
@@ -243,7 +254,7 @@ public class Config {
         BUILDER.push("Fish Breeding Behavior");
 
         DISABLE_FISH_BREEDING = BUILDER
-                .comment("\n Completely disable Fish breeding behavior")
+                .comment(" Completely disable Fish breeding behavior")
                 .define("disableFishBreedingCompletely", false);
 
         FISH_BREED_BLACKLIST = BUILDER
@@ -268,11 +279,11 @@ public class Config {
 
         BREED_COOLDOWN_TIME = BUILDER
                 .comment("\n Ticks that a fish will be unable to breed or hunt food after breeding")
-                .defineInRange("fishBreedCooldownTime", 3000, 0, Integer.MAX_VALUE);
+                .defineInRange("fishBreedCooldownTime", 3600, 0, Integer.MAX_VALUE);
 
         FISH_BREEDING_XP = BUILDER
                 .comment("\n Maximum value of the XP orb produced when fish breed; 0 to disable")
-                .defineInRange("fishBreedingMaxXP", 5, 0, Integer.MAX_VALUE);
+                .defineInRange("fishBreedingMaxXP", 4, 0, Integer.MAX_VALUE);
 
         HAS_BRED_DESPAWN = BUILDER
                 .comment("\n Whether fish can despawn if they've bred.  Not retroactive.")
@@ -285,7 +296,7 @@ public class Config {
         BUILDER.push("Squid Hunting Behavior");
 
         DISABLE_SQUID_HUNTING = BUILDER
-                .comment("\n Completely disable Squids hunting for prey.")
+                .comment(" Completely disable Squids hunting for prey.")
                 .define("disableSquidHuntingCompletely", false);
 
         CANHUNT_BLACKLIST = BUILDER
@@ -313,17 +324,23 @@ public class Config {
                 .defineInRange("squidPreyHitRangeSqr", 1.5, 0.0, 64.0);
 
         SQUID_HUNT_DAMAGE = BUILDER
-                .comment("\n The amount of damage a squid does when hitting its prey.  If squidConsumeWeakPrey is not 0, entities with squidConsumeWeakPrey HP (or less) remaining will be consumed entirely.")
+                .comment("\n The amount of damage a squid does when hitting its prey." +
+                        "\n   If squidConsumeWeakPrey is not 0, entities with squidConsumeWeakPrey HP (or less) remaining will be consumed entirely.")
                 .defineInRange("squidHuntDamage", 2, 1, Integer.MAX_VALUE);
 
         CONSUME_PREY = BUILDER
-                .comment("\n Prey with this amount of HP (or less) remaining will be consumed entirely by the Squid, thus dropping no items or XP.  Set to 0 for Squid to kill prey normally." +
+                .comment("\n Prey with this amount of HP (or less) remaining will be consumed entirely by the Squid, thus dropping no items or XP." +
+                        "\n   Set to 0 for Squid to kill prey normally." +
                         "\n   Note that if squidHuntDamage is equal to or higher than the prey's remaining HP when hit, it will die normally.")
                 .defineInRange("squidConsumeWeakPrey", 1, 0, Integer.MAX_VALUE);
 
         SQUID_CALM_DOWN_TIME = BUILDER
+                .comment("\n Ticks that a squid will ignore food after a successful hunt")
+                .defineInRange("squidCalmdownTimeSuccess", 2400, 0, Integer.MAX_VALUE);
+
+        SQUID_CALM_DOWN_TIME_FAIL = BUILDER
                 .comment("\n Ticks that a squid will ignore food after losing sight of their prey")
-                .defineInRange("squidCalmdownTime", 1800, 0, Integer.MAX_VALUE);
+                .defineInRange("squidCalmdownTimeFail", 600, 0, Integer.MAX_VALUE);
 
         SQUID_LOVE_TIME = BUILDER
                 .comment("\n Ticks that a squid will be in the love state for after eating")
@@ -334,9 +351,9 @@ public class Config {
                 .defineInRange("squidBreedChanceAfterHunting", 0.75, 0.0, 1.0);
 
         SQUID_PREVENT_LOVE_RADIUS = BUILDER
-                .comment("\n If there are more than squidPreventLoveLimit of Fish within this radius of blocks," +
+                .comment("\n If there are more than squidPreventLoveLimit of Squid within this radius of blocks," +
                         "\n   the Squid will not enter love mode after a successful hunt.")
-                .defineInRange("squidPreventLoveRadius", 8.0, 0.0, 64.0);
+                .defineInRange("squidPreventLoveRadius", 10.0, 0.0, 64.0);
 
         SQUID_PREVENT_LOVE_AMOUNT = BUILDER
                 .comment("\n If there are more than this number of Squids within the squidPreventLoveRadius blocks," +
@@ -367,7 +384,7 @@ public class Config {
         BUILDER.push("Squid Breeding Behavior");
 
         DISABLE_SQUID_BREEDING = BUILDER
-                .comment("\n Completely disable Squids breeding behavior.")
+                .comment(" Completely disable Squids breeding behavior.")
                 .define("disableSquidBreedingCompletely", false);
 
         SQUID_BREED_BLACKLIST = BUILDER
@@ -380,7 +397,7 @@ public class Config {
 
         SQUID_MATE_SEARCH_RANGE = BUILDER
                 .comment("\n The range a squid will hunt for a breeding partner")
-                .defineInRange("squidPartnerSearchRange", 12.0, 0.0, 64.0);
+                .defineInRange("squidPartnerSearchRange", 16.0, 0.0, 64.0);
 
         SQUID_DIST_BREED = BUILDER
                 .comment("\n The maximum squared distance a fish can breed with their partner")
@@ -409,7 +426,7 @@ public class Config {
         BUILDER.push("Axolotl Auto-Breeding Behavior");
 
         AXOLOTL_BREED_BLACKLIST = BUILDER
-                .comment("\n List of Entity IDs - Axolotls cannot go into love mode upon killing one of these (blacklist behavior)" +
+                .comment(" List of Entity IDs - Axolotls cannot go into love mode upon killing one of these (blacklist behavior)" +
                         "\n   Axolotls will go into love mode upon killing one of these (whitelist behavior)")
                 .defineListAllowEmpty("axolotlPreyBreedBlacklist", List.of("minecraft:tropical_fish"), () -> "", Config::validateEntityType);
 
@@ -437,7 +454,7 @@ public class Config {
         BUILDER.push("Tropical Fish Genetics");
 
         TROPICAL_SINGLE_PATTERN = BUILDER
-                .comment("\n Whether tropical fish that hatch out of the same egg clutch should be identical")
+                .comment(" Whether tropical fish that hatch out of the same egg clutch should be identical")
                 .define("tropicalSinglePattern", false);
 
         COLOR_LIST = BUILDER
@@ -468,7 +485,7 @@ public class Config {
         BUILDER.push("Miscellaneous");
 
         ENABLE_FISHERMAN_TRADE = BUILDER
-                .comment("\n Enable/Disable all villager trades added by this mod")
+                .comment(" Enable/Disable all villager trades added by this mod")
                 .define("enableVillagerTrades", true);
 
         ENABLE_WANDERING_TRADE = BUILDER
@@ -490,6 +507,14 @@ public class Config {
         ENABLE_WATER_BREATHING_POTIONS = BUILDER
                 .comment("\n Enable Water Breathing Potion recipe (awkward + squid eggs)")
                 .define("enableWaterBreathingPotionRecipe", true);
+
+        WAND_BIGUSE_RADIUS = BUILDER
+                .comment("\n Radius of effect for the Dev Wand's crouch uses")
+                .defineInRange("wandCrouchUseRadius", 12.0, 0.0, 64.0);
+
+        DEBUG_TROPICAL_COLORS = BUILDER
+                .comment("\n Whether Fish Eggs should output the genetic color data of hatching tropical fish to latest.log (for testing)")
+                .define("debugTropicalColorsToLog", false);
 
         BUILDER.pop();
 

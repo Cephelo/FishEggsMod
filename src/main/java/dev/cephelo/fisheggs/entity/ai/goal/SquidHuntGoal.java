@@ -74,7 +74,10 @@ public class SquidHuntGoal extends Goal {
     public void stop() {
         //this.animal.removeEffect(MobEffects.GLOWING);
         this.prey = null;
-        this.animal.setData(FishDataAttachments.HUNT_COOLDOWN, reducedTickDelay(Config.SQUID_CALM_DOWN_TIME.get()));
+        // if did not successfully eat
+        if (this.animal.getData(FishDataAttachments.HUNT_COOLDOWN) <= 0) {
+            this.animal.setData(FishDataAttachments.HUNT_COOLDOWN, Config.SQUID_CALM_DOWN_TIME_FAIL.get());
+        }
         this.animal.setData(FishDataAttachments.HAS_TARGET.get(), false);
     }
 
@@ -164,6 +167,7 @@ public class SquidHuntGoal extends Goal {
 
     public static void setLoveState(Mob mob) {
         mob.setData(FishDataAttachments.FISHINLOVE, Config.SQUID_LOVE_TIME.get());
+        mob.setData(FishDataAttachments.HUNT_COOLDOWN, Config.SQUID_CALM_DOWN_TIME.get());
 
         // particle indicator
         mob.addEffect(new MobEffectInstance(MobEffects.LUCK, Config.SQUID_LOVE_TIME.get()));

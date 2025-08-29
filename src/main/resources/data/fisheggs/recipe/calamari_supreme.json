@@ -13,12 +13,15 @@
     },
     "W": {
       "tag": "fisheggs:noodles"
+    },
+    "B": {
+      "item": "minecraft:bowl"
     }
   },
   "pattern": [
     "SES",
-    "TWT",
-    "WTW"
+    "WTW",
+    "TBT"
   ],
   "result": {
     "id": "fisheggs:calamari_supreme"

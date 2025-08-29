@@ -21,6 +21,7 @@ public class ModSounds {
     public static final Supplier<SoundEvent> SQUID_EGGS_HATCH = registerSoundEvent("squid_eggs_hatch");
     public static final Supplier<SoundEvent> WAND_USE = registerSoundEvent("wand_use");
     public static final Supplier<SoundEvent> WAND_FAIL = registerSoundEvent("wand_fail");
+    public static final Supplier<SoundEvent> WAND_USE_BIG = registerSoundEvent("wand_use_big");
 
     private static Supplier<SoundEvent> registerSoundEvent(String name) {
         ResourceLocation id = ResourceLocation.fromNamespaceAndPath(FishEggsMod.MODID, name);

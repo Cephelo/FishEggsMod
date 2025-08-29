@@ -6,9 +6,13 @@ import dev.cephelo.fisheggs.item.component.FishEggComponents;
 import dev.cephelo.fisheggs.item.component.ModDataComponents;
 import dev.cephelo.fisheggs.item.handler.FishHatchHandler;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -18,6 +22,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.material.Fluid;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -44,17 +49,27 @@ public class FishEggsItem extends Item {
                 comp.type(), comp.variant1(), comp.variant2());
     }
 
+    private boolean inWater(ServerLevel serverLevel, BlockPos pos) {
+        TagKey<Fluid> allowedFluids = TagKey.create(Registries.FLUID, ResourceLocation.parse("fisheggs:allowed_hatch_fluids"));
+        return !Config.FISH_EGGS_NEED_WATER.get() || serverLevel.getFluidState(pos).is(allowedFluids);
+    }
+
     @Override
     public InteractionResult useOn(UseOnContext context) {
-        context.getPlayer().swing(context.getHand());
-        if (context.getLevel() instanceof ServerLevel serverLevel) {
+        BlockPos targetPos = context.getClickedPos().relative(context.getClickedFace(), 1);
+
+        if (context.getLevel() instanceof ServerLevel serverLevel && inWater(serverLevel, targetPos)) {
+            context.getPlayer().swing(context.getHand());
             FishEggComponents comp = context.getItemInHand().get(ModDataComponents.FE_COMP);
             // handles null from creative inventory
             if (comp == null) comp = new FishEggComponents(EntityType.COD, 0, 0);
 
-            FishHatchHandler.spawnFish(serverLevel, context.getClickedPos().relative(context.getClickedFace(), 1), comp);
+            FishHatchHandler.spawnFish(serverLevel, targetPos, comp);
+            context.getItemInHand().shrink(1);
+
+            return InteractionResult.CONSUME;
         }
-        context.getItemInHand().shrink(1);
+
         return super.useOn(context);
     }
 

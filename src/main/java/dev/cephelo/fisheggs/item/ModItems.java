@@ -8,6 +8,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.Rarity;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredItem;
@@ -20,7 +21,7 @@ public class ModItems {
             () -> new FishEggsItem(new Item.Properties()
                     //.component(ModDataComponents.FE_COMP.value(), new FishEggComponents(EntityType.COD, 0, 0))
                     .food((new FoodProperties.Builder()).nutrition(1).saturationModifier(0.05F)
-                            .effect(() -> new MobEffectInstance(MobEffects.POISON, 200, 0), 0.3F)
+                            .effect(() -> new MobEffectInstance(MobEffects.POISON, 200, 0), 0.4F)
                             .fast().build()))
             );
 
@@ -30,7 +31,7 @@ public class ModItems {
     public static final DeferredItem<Item> SQUID_EGGS = ITEMS.register("squid_eggs",
             () -> new SquidEggsItem(new Item.Properties()
                     .food((new FoodProperties.Builder()).nutrition(2).saturationModifier(0.1F)
-                            .effect(() -> new MobEffectInstance(MobEffects.POISON, 200, 1), 0.3F)
+                            .effect(() -> new MobEffectInstance(MobEffects.POISON, 200, 1), 0.4F)
                             .build()))
     );
 
@@ -58,13 +59,15 @@ public class ModItems {
                     .food((new FoodProperties.Builder()).nutrition(5).saturationModifier(0.6F).build()))
     );
 
-    static MobEffectInstance luck = new MobEffectInstance(MobEffects.LUCK, 3600, 2);
+    static MobEffectInstance luck = new MobEffectInstance(MobEffects.LUCK, 4800, 2);
     public static final DeferredItem<Item> CALAMARI_SUPREME = ITEMS.register("calamari_supreme",
             () -> new EffectTooltipItem(luck, new Item.Properties()
                     .rarity(Rarity.UNCOMMON)
+                    .stacksTo(1)
                     .food((new FoodProperties.Builder()).nutrition(12).saturationModifier(1.25F)
                             .effect(() -> luck, 1.0F)
                             .alwaysEdible()
+                            .usingConvertsTo(Items.BOWL)
                             .build()))
     );
 

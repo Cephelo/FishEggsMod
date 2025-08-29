@@ -3,12 +3,16 @@ package dev.cephelo.fisheggs.item.squid;
 import dev.cephelo.fisheggs.Config;
 import dev.cephelo.fisheggs.item.component.ModDataComponents;
 import dev.cephelo.fisheggs.item.component.SquidEggsComponent;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.event.EventHooks;
 
@@ -30,14 +34,19 @@ public class SquidEggsItemEntity extends ItemEntity {
         if (!this.level().isClientSide && this.getAge() >= this.lifespan - 1) {
             this.lifespan = Mth.clamp(this.lifespan + EventHooks.onItemExpire(this), 0, 32766);
             if (this.getAge() >= this.lifespan - 1 && this.level() instanceof ServerLevel serverLevel) {
-                if (Config.SQUID_EGGS_NEED_WATER.get() && !this.isInWater()) {}
-                else {
-                    for (int i = 0; i < this.getItem().getCount(); i++)
-                        SquidEggsItem.spawnSquids(serverLevel, this.getOnPos().above(),
-                                this.getItem().get(ModDataComponents.SE_COMP));
-                }
+                attemptHatchEggs(serverLevel, this);
             }
         }
         super.tick();
+    }
+
+    public static void attemptHatchEggs(ServerLevel serverLevel, SquidEggsItemEntity entity) {
+        TagKey<Fluid> allowedFluids = TagKey.create(Registries.FLUID, ResourceLocation.parse("fisheggs:allowed_hatch_fluids"));
+
+        if (!Config.SQUID_EGGS_NEED_WATER.get() || serverLevel.getFluidState(entity.getOnPos()).is(allowedFluids)) {
+            for (int i = 0; i < entity.getItem().getCount(); i++)
+                SquidEggsItem.spawnSquids(serverLevel, entity.getOnPos().above(),
+                        entity.getItem().get(ModDataComponents.SE_COMP));
+        }
     }
 }

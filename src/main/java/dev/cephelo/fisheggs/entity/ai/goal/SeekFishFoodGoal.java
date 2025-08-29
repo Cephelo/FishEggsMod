@@ -102,6 +102,7 @@ public class SeekFishFoodGoal extends Goal {
         //FishEggsMod.LOGGER.info("id {}, match {}, list {}", EntityType.getKey(this.mob.getType()).toString(), blacklistContains(this.mob.getType()), Config.FISH_BLACKLIST.get());
         if (blacklistContains(this.mob.getType())) return true;
         if (Config.FISH_PREVENT_LOVE_HUNT.get() && tooManyFish()) return true;
+        if (this.mob.getData(FishDataAttachments.HUNT_COOLDOWN) > 0) return true;
         return this.mob.getData(FishDataAttachments.FISHINLOVE) > 0 || this.mob.getData(FishDataAttachments.BREED_COOLDOWN) > 0;
     }
 
@@ -132,7 +133,10 @@ public class SeekFishFoodGoal extends Goal {
         //FishEggsMod.LOGGER.info("stop seek");
         this.item = null;
         this.mob.getNavigation().stop();
-        this.mob.setData(FishDataAttachments.HUNT_COOLDOWN, reducedTickDelay(Config.CALM_DOWN_TIME.get()));
+        // if did not successfully eat
+        if (this.mob.getData(FishDataAttachments.HUNT_COOLDOWN) <= 0) {
+            this.mob.setData(FishDataAttachments.HUNT_COOLDOWN, Config.CALM_DOWN_TIME_FAIL.get());
+        }
     }
 
     @Override
@@ -165,6 +169,7 @@ public class SeekFishFoodGoal extends Goal {
 
     public static void setLoveState(Mob mob) {
         mob.setData(FishDataAttachments.FISHINLOVE, Config.LOVE_TIME.get());
+        mob.setData(FishDataAttachments.HUNT_COOLDOWN, Config.CALM_DOWN_TIME.get());
 
         // particle indicator
         mob.addEffect(new MobEffectInstance(MobEffects.LUCK, Config.LOVE_TIME.get()));

@@ -7,9 +7,12 @@ import dev.cephelo.fisheggs.item.component.SquidEggsComponent;
 import dev.cephelo.fisheggs.sound.ModSounds;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -20,6 +23,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.material.Fluid;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -46,17 +50,26 @@ public class SquidEggsItem extends Item {
                 comp.type());
     }
 
+    private boolean inWater(ServerLevel serverLevel, BlockPos pos) {
+        TagKey<Fluid> allowedFluids = TagKey.create(Registries.FLUID, ResourceLocation.parse("fisheggs:allowed_hatch_fluids"));
+        return !Config.SQUID_EGGS_NEED_WATER.get() || serverLevel.getFluidState(pos).is(allowedFluids);
+    }
+
     @Override
     public InteractionResult useOn(UseOnContext context) {
-        context.getPlayer().swing(context.getHand());
-        if (context.getLevel() instanceof ServerLevel serverLevel) {
+        BlockPos targetPos = context.getClickedPos().relative(context.getClickedFace(), 1);
+        if (context.getLevel() instanceof ServerLevel serverLevel && inWater(serverLevel, targetPos)) {
+            context.getPlayer().swing(context.getHand());
             SquidEggsComponent comp = context.getItemInHand().get(ModDataComponents.SE_COMP);
             // handles null from creative inventory
             if (comp == null) comp = new SquidEggsComponent(EntityType.SQUID);
 
-            spawnSquids(serverLevel, context.getClickedPos().relative(context.getClickedFace(), 1), comp);
+            spawnSquids(serverLevel, targetPos, comp);
+            context.getItemInHand().shrink(1);
+
+            return InteractionResult.CONSUME;
         }
-        context.getItemInHand().shrink(1);
+
         return super.useOn(context);
     }
 
@@ -70,11 +83,9 @@ public class SquidEggsItem extends Item {
                 thing.setData(FishDataAttachments.BREED_COOLDOWN, Config.SQUID_HATCH_BREED_COOLDOWN_TIME.get());
                 if (thing instanceof Mob mob) {
                     mob.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, Config.SQUID_HATCH_BREED_COOLDOWN_TIME.get()));
-                    if (!Config.SQUID_HATCHED_CAN_DESPAWN.get())
+                    if (!Config.SQUID_HATCHED_CAN_DESPAWN.get()) // Prevents despawning
                         mob.setPersistenceRequired();
                 }
-                // Prevents despawning
-
             }
         }
 

@@ -117,7 +117,7 @@ public class FishHatchHandler {
         colorList.addAll(pushColorsInRange(maxColor, minColor, Config.TROPICAL_COLOR_OUTER.get(), !decrement, false));
 
         int result = colorList.get(r.nextInt(colorList.size()));
-        //FishEggsMod.LOGGER.info("color1: {} | color2: {} | inv: {} | result: {} | array: {}", color1, color2, decrement, result, colorList);
+        if (Config.DEBUG_TROPICAL_COLORS.get()) FishEggsMod.LOGGER.info("color1: {} | color2: {} | inv: {} | result: {} | array: {}", color1, color2, decrement, result, colorList);
 
         return DyeColor.byId(
                 minecraftColors.indexOf(colors.get(result))
