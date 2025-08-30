@@ -39,7 +39,7 @@ displayURL="https://modrinth.com/project/aquatic-breeding" #optional
 logoFile="icon.png" #optional
 
 # A text field displayed in the mod UI
-credits="Created by Cephelo" #optional
+#credits="Created by Cephelo" #optional
 
 # A text field displayed in the mod UI
 authors="${mod_authors}" #optional
