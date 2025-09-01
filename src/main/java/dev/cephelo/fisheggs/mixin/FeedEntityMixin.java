@@ -68,6 +68,7 @@ public class FeedEntityMixin {
     @Inject(method = "mobInteract", at = @At("HEAD"), cancellable = true)
     protected void mobInteract(Player player, InteractionHand hand, CallbackInfoReturnable<InteractionResult> cir) {
         if ((Object)this instanceof AbstractFish fish) {
+            if (fish.level().getRandom().nextInt(100) > Config.FISH_HANDFEED_CHANCE.get() * 100) return;
 
             // blacklistContains (handfed)
             if (Config.FISH_HANDFED_BLACKLIST.get().contains(EntityType.getKey(fish.getType()).toString())
@@ -88,6 +89,8 @@ public class FeedEntityMixin {
         }
 
         if ((Object)this instanceof Squid squid) {
+            if (squid.level().getRandom().nextInt(100) > Config.SQUID_HANDFEED_CHANCE.get() * 100) return;
+
             if (squid.isBaby() || squid.getData(FishDataAttachments.FISHINLOVE) > 0
                     || squid.getData(FishDataAttachments.BREED_COOLDOWN) > 0) return;
 

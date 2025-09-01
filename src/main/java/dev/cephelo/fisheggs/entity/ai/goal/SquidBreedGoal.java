@@ -56,7 +56,10 @@ public class SquidBreedGoal extends Goal {
     }
 
     public void start() {
-        if (cannotBreed()) stop();
+        if (cannotBreed()) {
+            stop();
+            return;
+        }
         this.animal.setData(FishDataAttachments.HAS_TARGET.get(), true);
     }
 
@@ -79,9 +82,8 @@ public class SquidBreedGoal extends Goal {
             this.animal.getLookControl().setLookAt(this.partner, 10.0F, (float)this.animal.getMaxHeadXRot());
         }
 
-        //FishEggsMod.LOGGER.info("distsqrS {}", this.animal.distanceToSqr(this.partner));
         ++this.loveTime;
-        if (this.loveTime >= this.adjustedTickDelay(40) && this.animal.distanceToSqr(this.partner) < Config.SQUID_DIST_BREED.get()) {
+        if (this.loveTime >= this.adjustedTickDelay(40) && this.animal.distanceTo(this.partner) < Config.SQUID_DIST_BREED.get()) {
             if (canUse()) this.breed();
         }
 
@@ -104,9 +106,9 @@ public class SquidBreedGoal extends Goal {
         Squid animal = null;
 
         for(Squid animal1 : list) {
-            if (canMate(this.animal, animal1) && !animal1.isPanicking() && this.animal.distanceToSqr(animal1) < d0) {
+            if (canMate(this.animal, animal1) && !animal1.isPanicking() && this.animal.distanceTo(animal1) < d0) {
                 animal = animal1;
-                d0 = this.animal.distanceToSqr(animal1);
+                d0 = this.animal.distanceTo(animal1);
             }
         }
 

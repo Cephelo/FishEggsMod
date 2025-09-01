@@ -5,6 +5,7 @@ import dev.cephelo.fisheggs.entity.ai.goal.FishBreedGoal;
 import dev.cephelo.fisheggs.entity.ai.goal.SeekFishFoodGoal;
 import dev.cephelo.fisheggs.entity.ai.goal.SquidBreedGoal;
 import dev.cephelo.fisheggs.entity.ai.goal.SquidHuntGoal;
+import dev.cephelo.fisheggs.item.ModCreativeModeTab;
 import dev.cephelo.fisheggs.item.ModItems;
 import dev.cephelo.fisheggs.item.component.FishEggComponents;
 import dev.cephelo.fisheggs.item.component.ModDataComponents;
@@ -46,15 +47,11 @@ import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 
 import java.util.List;
 
-// The value here should match an entry in the META-INF/neoforge.mods.toml file
 @Mod(FishEggsMod.MODID)
 public class FishEggsMod {
-    // Define mod id in a common place for everything to reference
     public static final String MODID = "fisheggs";
     public static final Logger LOGGER = LogUtils.getLogger();
 
-    // The constructor for the mod class is the first code that is run when your mod is loaded.
-    // FML will recognize some parameter types like IEventBus or ModContainer and pass them in automatically.
     public FishEggsMod(IEventBus modEventBus, ModContainer modContainer) {
 
         ModDataComponents.register(modEventBus);
@@ -62,16 +59,15 @@ public class FishEggsMod {
         ModPotions.register(modEventBus);
         FishDataAttachments.register(modEventBus);
         ModSounds.register(modEventBus);
+        ModCreativeModeTab.register(modEventBus);
 
         NeoForge.EVENT_BUS.register(this);
 
         modEventBus.addListener(this::addCreative);
 
-        // Register our mod's ModConfigSpec so that FML can create and load the config file for us
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }
 
-    // Add the example block item to the building blocks tab
     private void addCreative(BuildCreativeModeTabContentsEvent event) {
         if (event.getTabKey() == CreativeModeTabs.INGREDIENTS) {
             event.insertAfter(new ItemStack(Items.EGG), ModItems.FISH_FOOD.toStack(), CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
@@ -134,12 +130,13 @@ public class FishEggsMod {
             entity.setData(FishDataAttachments.HUNT_COOLDOWN, huntCooldown - 1);
     }
 
+    // Potion Brewing recipes
     @SubscribeEvent
     public void onBrewingRecipeRegister(RegisterBrewingRecipesEvent event) {
         PotionBrewing.Builder builder = event.getBuilder();
 
         if (Config.ENABLE_WATER_BREATHING_POTIONS.get())
-            builder.addMix(Potions.AWKWARD, ModItems.SQUID_EGGS.get(), Potions.WATER_BREATHING);
+            builder.addMix(Potions.AWKWARD, ModItems.SQUID_EGGS.get(), Potions.LONG_WATER_BREATHING);
 
         if (Config.ENABLE_GLOWING_POTIONS.get()) {
             builder.addMix(Potions.NIGHT_VISION, Items.GLOW_INK_SAC, ModPotions.GLOWING);
@@ -159,6 +156,7 @@ public class FishEggsMod {
         }
     }
 
+    // Villager Trades
     @SubscribeEvent
     public void addCustomTrades(VillagerTradesEvent event) {
         if (!Config.ENABLE_FISHERMAN_TRADE.get()) return;
@@ -206,6 +204,7 @@ public class FishEggsMod {
         }
     }
 
+    // Wandering Trader trades
     @SubscribeEvent
     public void addWanderingTrades(WandererTradesEvent event) {
         if (!Config.ENABLE_WANDERING_TRADE.get()) return;
@@ -267,7 +266,6 @@ public class FishEggsMod {
         rareTrades.add((entity, randomSource) -> new MerchantOffer(
                 new ItemCost(Items.EMERALD, 12), squideggs, 2, 10, 0.05f
         ));
-
 
     }
 }

@@ -1,4 +1,13 @@
 {
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:not",
+      "value": {
+      	"type": "neoforge:mod_loaded",
+      	"modid": "farmersdelight"
+      }
+    }
+  ],
   "type": "minecraft:crafting_shaped",
   "category": "food",
   "key": {
@@ -12,7 +21,7 @@
       "tag": "fisheggs:cooked_squid"
     },
     "W": {
-      "tag": "fisheggs:noodles"
+      "tag": "c:crops/wheat"
     },
     "B": {
       "item": "minecraft:bowl"

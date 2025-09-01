@@ -77,12 +77,12 @@ public class SeekFishFoodGoal extends Goal {
                 itemEntity -> ItemStack.isSameItem(itemEntity.getItem(), getFoodStack(itemEntity.getItem(), this.mob.getType())));
 
         ItemEntity food = null;
-        double closedSquareDistance = this.range * this.range;
+        double closedDistance = this.range * this.range;
         for (ItemEntity itemEntity : entities) {
-            double distance = this.mob.distanceToSqr(itemEntity);
-            if (distance < closedSquareDistance) {
+            double distance = this.mob.distanceTo(itemEntity);
+            if (distance < closedDistance) {
                 food = itemEntity;
-                closedSquareDistance = distance;
+                closedDistance = distance;
             }
         }
         return food;
@@ -123,10 +123,14 @@ public class SeekFishFoodGoal extends Goal {
     }
 
     public void start() {
-        if (cannotEat()) stop();
+        if (cannotEat()) {
+            stop();
+            return;
+        }
 //        else if (this.item != null) {
 //            FishEggsMod.LOGGER.info("begin seek");
 //        }
+        this.mob.setData(FishDataAttachments.HAS_TARGET.get(), true);
     }
 
     public void stop() {
@@ -137,6 +141,7 @@ public class SeekFishFoodGoal extends Goal {
         if (this.mob.getData(FishDataAttachments.HUNT_COOLDOWN) <= 0) {
             this.mob.setData(FishDataAttachments.HUNT_COOLDOWN, Config.CALM_DOWN_TIME_FAIL.get());
         }
+        this.mob.setData(FishDataAttachments.HAS_TARGET.get(), false);
     }
 
     @Override
@@ -147,16 +152,15 @@ public class SeekFishFoodGoal extends Goal {
     public void tick() {
         if (this.item == null) return;
 
-        //FishEggsMod.LOGGER.info("distsqrF {}", this.mob.distanceToSqr(this.item));
         this.mob.getLookControl().setLookAt(this.item, this.mob.getMaxHeadYRot(), this.mob.getMaxHeadXRot());
-        if (this.mob.distanceToSqr(this.item) < Config.DIST_FOOD.get()) { // 0.75 // 0.6
+        if (this.mob.distanceTo(this.item) < Config.DIST_FOOD.get()) { // 0.75 // 0.6
             if (this.item.getItem().getCount() > 0 && this.mob.getData(FishDataAttachments.FISHINLOVE) == 0) {
                 this.item.getItem().shrink(1);
                 mob.level().playSound(null, mob.getOnPos(), ModSounds.FISH_EATS.get(), SoundSource.NEUTRAL);
 
                 if (this.mob.level().getRandom().nextInt(100) <= Config.FISH_EAT_BREED_CHANCE.get() * 100) {
                     if (tooManyFish()) {
-                        mob.addEffect(new MobEffectInstance(MobEffects.UNLUCK, 400));
+                        mob.addEffect(new MobEffectInstance(MobEffects.UNLUCK, Config.UNLUCK_DURATION.get()));
                     } else setLoveState(this.mob);
                 }
                 this.mob.getNavigation().stop();

@@ -1,7 +1,6 @@
 package dev.cephelo.fisheggs.entity.ai.goal;
 
 import dev.cephelo.fisheggs.Config;
-import dev.cephelo.fisheggs.FishEggsMod;
 import dev.cephelo.fisheggs.attachment.FishDataAttachments;
 import dev.cephelo.fisheggs.item.FishEggsItemEntity;
 import dev.cephelo.fisheggs.item.ModItems;
@@ -60,12 +59,17 @@ public class FishBreedGoal extends Goal {
     }
 
     public void start() {
-        if (cannotBreed()) stop();
+        if (cannotBreed()) {
+            stop();
+            return;
+        }
+        this.animal.setData(FishDataAttachments.HAS_TARGET.get(), true);
     }
 
     public void stop() {
         this.partner = null;
         this.loveTime = 0;
+        this.animal.setData(FishDataAttachments.HAS_TARGET.get(), false);
     }
 
     public void tick() {
@@ -74,8 +78,7 @@ public class FishBreedGoal extends Goal {
         this.animal.getLookControl().setLookAt(this.partner, 10.0F, (float)this.animal.getMaxHeadXRot());
         this.animal.getNavigation().moveTo(this.partner, this.speedModifier);
         ++this.loveTime;
-        //FishEggsMod.LOGGER.info("distsqrB {}", this.animal.distanceToSqr(this.partner));
-        if (this.loveTime >= this.adjustedTickDelay(40) && this.animal.distanceToSqr(this.partner) < Config.DIST_BREED.get()) {
+        if (this.loveTime >= this.adjustedTickDelay(40) && this.animal.distanceTo(this.partner) < Config.DIST_BREED.get()) {
             if (canUse()) this.breed();
         }
 
@@ -98,9 +101,9 @@ public class FishBreedGoal extends Goal {
         AbstractFish animal = null;
 
         for(AbstractFish animal1 : list) {
-            if (canMate(this.animal, animal1) && !animal1.isPanicking() && this.animal.distanceToSqr(animal1) < d0) {
+            if (canMate(this.animal, animal1) && !animal1.isPanicking() && this.animal.distanceTo(animal1) < d0) {
                 animal = animal1;
-                d0 = this.animal.distanceToSqr(animal1);
+                d0 = this.animal.distanceTo(animal1);
             }
         }
 

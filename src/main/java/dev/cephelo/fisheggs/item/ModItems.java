@@ -11,8 +11,12 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.Rarity;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
+
+import java.util.List;
+import java.util.Optional;
 
 public class ModItems {
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(FishEggsMod.MODID);
@@ -21,7 +25,7 @@ public class ModItems {
             () -> new FishEggsItem(new Item.Properties()
                     //.component(ModDataComponents.FE_COMP.value(), new FishEggComponents(EntityType.COD, 0, 0))
                     .food((new FoodProperties.Builder()).nutrition(1).saturationModifier(0.05F)
-                            .effect(() -> new MobEffectInstance(MobEffects.POISON, 200, 0), 0.4F)
+                            .effect(() -> new MobEffectInstance(MobEffects.POISON, 200, 0), 0.5F)
                             .fast().build()))
             );
 
@@ -31,7 +35,7 @@ public class ModItems {
     public static final DeferredItem<Item> SQUID_EGGS = ITEMS.register("squid_eggs",
             () -> new SquidEggsItem(new Item.Properties()
                     .food((new FoodProperties.Builder()).nutrition(2).saturationModifier(0.1F)
-                            .effect(() -> new MobEffectInstance(MobEffects.POISON, 200, 1), 0.4F)
+                            .effect(() -> new MobEffectInstance(MobEffects.POISON, 200, 1), 0.5F)
                             .build()))
     );
 
@@ -46,11 +50,10 @@ public class ModItems {
                     .food((new FoodProperties.Builder()).nutrition(2).saturationModifier(0.2F).build()))
     );
 
-    static MobEffectInstance glowing = new MobEffectInstance(MobEffects.GLOWING, 300, 0);
     public static final DeferredItem<Item> GLOW_SQUID_TENTACLE = ITEMS.register("glow_squid_tentacle",
-            () -> new EffectTooltipItem(glowing, new Item.Properties()
+            () -> new EffectTooltipItem(new Item.Properties()
                     .food((new FoodProperties.Builder()).nutrition(2).saturationModifier(0.2F)
-                            .effect(() -> glowing, 1.0F)
+                            .effect(() -> new MobEffectInstance(MobEffects.GLOWING, 300, 0), 1.0F)
                             .build()))
     );
 
@@ -59,16 +62,20 @@ public class ModItems {
                     .food((new FoodProperties.Builder()).nutrition(5).saturationModifier(0.6F).build()))
     );
 
-    static MobEffectInstance luck = new MobEffectInstance(MobEffects.LUCK, 4800, 2);
+    // Add Nourishment effect if Farmer's Delight is installed
+    static List<FoodProperties.PossibleEffect> effects = new java.util.ArrayList<>();
+    static {
+        effects.add(new FoodProperties.PossibleEffect(() -> new MobEffectInstance(MobEffects.LUCK, 4800, 2), 1.0F));
+        if (ModList.get().isLoaded("farmersdelight"))
+            effects.add(new FoodProperties.PossibleEffect(() -> new MobEffectInstance(vectorwing.farmersdelight.common.registry.ModEffects.NOURISHMENT, 4800, 0), 1.0F));
+    }
+
+    static FoodProperties calamariFoodProperties = new FoodProperties(12, 1.25F, true, 1.6F, Optional.of(Items.BOWL.getDefaultInstance()), effects);
     public static final DeferredItem<Item> CALAMARI_SUPREME = ITEMS.register("calamari_supreme",
-            () -> new EffectTooltipItem(luck, new Item.Properties()
+            () -> new EffectTooltipItem(new Item.Properties()
                     .rarity(Rarity.UNCOMMON)
                     .stacksTo(1)
-                    .food((new FoodProperties.Builder()).nutrition(12).saturationModifier(1.25F)
-                            .effect(() -> luck, 1.0F)
-                            .alwaysEdible()
-                            .usingConvertsTo(Items.BOWL)
-                            .build()))
+                    .food(calamariFoodProperties))
     );
 
     public static final DeferredItem<Item> WAND = ITEMS.register("wand",

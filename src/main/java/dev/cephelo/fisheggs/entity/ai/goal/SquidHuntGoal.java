@@ -1,7 +1,6 @@
 package dev.cephelo.fisheggs.entity.ai.goal;
 
 import dev.cephelo.fisheggs.Config;
-import dev.cephelo.fisheggs.FishEggsMod;
 import dev.cephelo.fisheggs.attachment.FishDataAttachments;
 import dev.cephelo.fisheggs.sound.ModSounds;
 import net.minecraft.sounds.SoundSource;
@@ -67,7 +66,10 @@ public class SquidHuntGoal extends Goal {
 
     public void start() {
         //this.animal.addEffect(new MobEffectInstance(MobEffects.GLOWING, 10000));
-        if (cannotHunt()) stop();
+        if (cannotHunt()) {
+            stop();
+            return;
+        }
         this.animal.setData(FishDataAttachments.HAS_TARGET.get(), true);
     }
 
@@ -119,8 +121,7 @@ public class SquidHuntGoal extends Goal {
             this.animal.getLookControl().setLookAt(this.prey, 10.0F, (float)this.animal.getMaxHeadXRot());
         }
 
-        //FishEggsMod.LOGGER.info("distsqrH {}", this.animal.distanceToSqr(this.prey));
-        if (this.animal.distanceToSqr(this.prey) < Config.SQUID_DIST_HUNT.get()) {
+        if (this.animal.distanceTo(this.prey) < Config.SQUID_DIST_HUNT.get()) {
             if (canUse()) this.feed();
         }
     }
@@ -132,9 +133,9 @@ public class SquidHuntGoal extends Goal {
         PathfinderMob animal = null;
 
         for(PathfinderMob animal1 : list) {
-            if (this.animal != animal1 && this.animal.distanceToSqr(animal1) < d0) {
+            if (this.animal != animal1 && this.animal.distanceTo(animal1) < d0) {
                 animal = animal1;
-                d0 = this.animal.distanceToSqr(animal1);
+                d0 = this.animal.distanceTo(animal1);
             }
         }
 
@@ -157,7 +158,7 @@ public class SquidHuntGoal extends Goal {
 
             if (level.getRandom().nextInt(100) <= Config.SQUID_HUNT_BREED_CHANCE.get() * 100) {
                 if (tooManySquids()) {
-                    animal.addEffect(new MobEffectInstance(MobEffects.UNLUCK, 400));
+                    animal.addEffect(new MobEffectInstance(MobEffects.UNLUCK, Config.UNLUCK_DURATION.get()));
                 } else setLoveState(this.animal);
                 stop();
             }

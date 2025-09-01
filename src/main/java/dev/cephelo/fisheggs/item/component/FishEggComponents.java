@@ -10,7 +10,6 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.entity.EntityType;
 
 public record FishEggComponents(EntityType type, int variant1, int variant2) {
-    // Basic codec
     public static final Codec<FishEggComponents> FE_CODEC = RecordCodecBuilder.create(instance ->
             instance.group(
                     BuiltInRegistries.ENTITY_TYPE.byNameCodec().fieldOf("type").forGetter(FishEggComponents::type),

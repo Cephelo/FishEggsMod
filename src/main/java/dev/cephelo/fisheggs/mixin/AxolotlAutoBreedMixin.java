@@ -1,6 +1,8 @@
 package dev.cephelo.fisheggs.mixin;
 
 import dev.cephelo.fisheggs.Config;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.AgeableMob;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -15,7 +17,6 @@ public class AxolotlAutoBreedMixin {
 
     @Inject(method = "onStopAttacking", at = @At("HEAD"))
     private static void breedCheck(Axolotl axolotl, LivingEntity target, CallbackInfo ci) {
-        //if (axolotl.level().isClientSide()) return;
         if (axolotl.level().getRandom().nextInt(100) > Config.AXOLOTL_HUNT_BREED_CHANCE.get() * 100) return;
 
         boolean listCheck =
@@ -25,7 +26,12 @@ public class AxolotlAutoBreedMixin {
         boolean tooManyAxolotls = axolotl.level().getEntitiesOfClass(Axolotl.class, axolotl.getBoundingBox().inflate(Config.AXOLOTL_PREVENT_LOVE_RADIUS.get())).size()
                     > Config.AXOLOTL_PREVENT_LOVE_AMOUNT.get();
 
-        if (target.isDeadOrDying() && listCheck && !tooManyAxolotls) {
+        if (tooManyAxolotls) {
+            axolotl.addEffect(new MobEffectInstance(MobEffects.UNLUCK, Config.UNLUCK_DURATION.get()));
+            return;
+        }
+
+        if (target.isDeadOrDying() && target.getLastAttacker() == axolotl && listCheck) {
             int i = axolotl.getAge();
             if (i == 0 && axolotl.canFallInLove()) {
                 axolotl.setInLove(null);

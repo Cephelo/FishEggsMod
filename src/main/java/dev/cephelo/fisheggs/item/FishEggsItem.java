@@ -1,7 +1,6 @@
 package dev.cephelo.fisheggs.item;
 
 import dev.cephelo.fisheggs.Config;
-import dev.cephelo.fisheggs.FishEggsMod;
 import dev.cephelo.fisheggs.item.component.FishEggComponents;
 import dev.cephelo.fisheggs.item.component.ModDataComponents;
 import dev.cephelo.fisheggs.item.handler.FishHatchHandler;

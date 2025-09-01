@@ -1,7 +1,6 @@
 package dev.cephelo.fisheggs.item.custom;
 
 import dev.cephelo.fisheggs.Config;
-import dev.cephelo.fisheggs.FishEggsMod;
 import dev.cephelo.fisheggs.attachment.FishDataAttachments;
 import dev.cephelo.fisheggs.item.FishEggsItemEntity;
 import dev.cephelo.fisheggs.item.ModItems;
@@ -18,7 +17,6 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.animal.AbstractFish;
 import net.minecraft.world.entity.animal.Squid;
 import net.minecraft.world.entity.player.Player;

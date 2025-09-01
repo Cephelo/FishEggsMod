@@ -69,7 +69,8 @@ public class Config {
             SQUID_PREVENT_LOVE_AMOUNT,
             FISH_PREVENT_LOVE_AMOUNT,
             CONSUME_PREY,
-            AXOLOTL_PREVENT_LOVE_AMOUNT;
+            AXOLOTL_PREVENT_LOVE_AMOUNT,
+            UNLUCK_DURATION;
 
     public static final ModConfigSpec.DoubleValue
             FOOD_SEARCH_RANGE,
@@ -86,7 +87,11 @@ public class Config {
             SQUID_PREVENT_LOVE_RADIUS,
             FISH_PREVENT_LOVE_RADIUS,
             AXOLOTL_PREVENT_LOVE_RADIUS,
-            WAND_BIGUSE_RADIUS;
+            WAND_BIGUSE_RADIUS,
+            FISH_SPEEDMOD_CHASE,
+            FISH_SPEEDMOD_BREED,
+            FISH_HANDFEED_CHANCE,
+            SQUID_HANDFEED_CHANCE;
 
     public static final ModConfigSpec.ConfigValue<List<? extends String>>
             FISH_IDS,
@@ -193,9 +198,13 @@ public class Config {
                 .comment("\n The range a fish can see matching food item entities from")
                 .defineInRange("fishFoodSearchRange", 8.0, 0.0, 64.0);
 
+        FISH_SPEEDMOD_CHASE = BUILDER
+                .comment("\n The speed modifier a fish will use when chasing food items")
+                .defineInRange("fishChaseSpeedModifier", 1.3, 0.1, 64.0);
+
         DIST_FOOD = BUILDER
-                .comment("\n The maximum squared distance a fish can consume a food item entity")
-                .defineInRange("fishFoodEatRangeSqr", 1.1, 0.0, 64.0);
+                .comment("\n The maximum distance a fish can consume a food item entity")
+                .defineInRange("fishFoodEatRange", 1.0, 0.0, 64.0);
 
         CALM_DOWN_TIME = BUILDER
                 .comment("\n Ticks that a fish will ignore food after successfully eating")
@@ -210,22 +219,22 @@ public class Config {
                 .defineInRange("fishInLoveTime", 600, 1, Integer.MAX_VALUE);
 
         FISH_EAT_BREED_CHANCE = BUILDER
-                .comment("\n The chance a fish will enter breeding mode upon eating a matching food item entity.  Does not affect hand-feeding.")
+                .comment("\n The chance a fish will enter love mode upon eating a matching food item entity.  Does not affect hand-feeding.")
                 .defineInRange("fishBreedChanceAfterScavenging", 1.0, 0.0, 1.0);
 
         FISH_PREVENT_LOVE_RADIUS = BUILDER
-                .comment("\n If there are more than fishPreventLoveLimit of Squids within this radius of blocks, " +
+                .comment("\n If there are more than fishNearbyPopulationCap of Squids within this radius of blocks, " +
                         "\n   the Fish will not enter love mode after eating.")
-                .defineInRange("fishPreventLoveRadius", 8.0, 0.0, 64.0);
+                .defineInRange("fishPopulationCheckRadius", 8.0, 0.0, 64.0);
 
         FISH_PREVENT_LOVE_AMOUNT = BUILDER
-                .comment("\n If there are more than this number of Squids within the fishPreventLoveRadius blocks, " +
+                .comment("\n If there are more than this number of Squids within the fishPopulationCheckRadius blocks, " +
                         "\n   the Fish will not enter love mode after eating.")
-                .defineInRange("fishPreventLoveLimit", 128, 0, Integer.MAX_VALUE);
+                .defineInRange("fishNearbyPopulationCap", 128, 0, Integer.MAX_VALUE);
 
         FISH_PREVENT_LOVE_HUNT = BUILDER
-                .comment("\n Whether fishPreventLoveRadius stops Fish from chasing food altogether rather than just entering love mode.")
-                .define("fishPreventLoveHunt", false);
+                .comment("\n Whether fishPopulationCheckRadius stops Fish from chasing food altogether rather than just entering love mode.")
+                .define("fishPopulationPreventsHunt", false);
 
         FISH_IDS = BUILDER
                 .comment("\n List of Entity IDs - each entry corresponds with the entry of fishFood_itemTags with the same index." +
@@ -246,6 +255,10 @@ public class Config {
         FISH_HANDFED_BLACKLIST_IS_WHITELIST = BUILDER
                 .comment("\n Whether fishCannotBeHandfed should act as a whitelist rather than a blacklist")
                 .define("fishCannotBeHandfedIsWhitelist", true);
+
+        FISH_HANDFEED_CHANCE = BUILDER
+                .comment("\n The chance a fish will enter love mode upon being hand-fed a matching food item.")
+                .defineInRange("fishHandfeedChance", 1.0, 0.0, 1.0);
 
         BUILDER.pop();
 
@@ -269,9 +282,13 @@ public class Config {
                 .comment("\n The range a fish will hunt for a breeding partner")
                 .defineInRange("fishPartnerSearchRange", 8.0, 0.0, 64.0);
 
+        FISH_SPEEDMOD_BREED = BUILDER
+                .comment("\n The speed modifier a fish will use when approaching a mate")
+                .defineInRange("fishBreedSpeedModifier", 1.3, 0.1, 64.0);
+
         DIST_BREED = BUILDER
-                .comment("\n The maximum squared distance a fish can breed with their partner")
-                .defineInRange("fishPartnerMateRangeSqr", 1.1, 0.0, 64.0);
+                .comment("\n The maximum distance a fish can breed with their partner")
+                .defineInRange("fishPartnerMateRange", 1.0, 0.0, 64.0);
 
         REGEN_TIME = BUILDER
                 .comment("\n Ticks that a fish will be given regeneration after breeding")
@@ -320,8 +337,8 @@ public class Config {
                 .defineInRange("squidHuntSearchRange", 12.0, 0.0, 64.0);
 
         SQUID_DIST_HUNT = BUILDER
-                .comment("\n The maximum squared distance away a squid can hit prey from")
-                .defineInRange("squidPreyHitRangeSqr", 1.5, 0.0, 64.0);
+                .comment("\n The maximum distance away a squid can hit prey from")
+                .defineInRange("squidPreyHitRange", 1.2, 0.0, 64.0);
 
         SQUID_HUNT_DAMAGE = BUILDER
                 .comment("\n The amount of damage a squid does when hitting its prey." +
@@ -351,18 +368,18 @@ public class Config {
                 .defineInRange("squidBreedChanceAfterHunting", 0.75, 0.0, 1.0);
 
         SQUID_PREVENT_LOVE_RADIUS = BUILDER
-                .comment("\n If there are more than squidPreventLoveLimit of Squid within this radius of blocks," +
+                .comment("\n If there are more than squidNearbyPopulationCap of Squid within this radius of blocks," +
                         "\n   the Squid will not enter love mode after a successful hunt.")
-                .defineInRange("squidPreventLoveRadius", 10.0, 0.0, 64.0);
+                .defineInRange("squidPopulationCheckRadius", 16.0, 0.0, 64.0);
 
         SQUID_PREVENT_LOVE_AMOUNT = BUILDER
-                .comment("\n If there are more than this number of Squids within the squidPreventLoveRadius blocks," +
+                .comment("\n If there are more than this number of Squids within the squidPopulationCheckRadius blocks," +
                         "\n   the Squid will not enter love mode after a successful hunt.")
-                .defineInRange("squidPreventLoveLimit", 16, 0, Integer.MAX_VALUE);
+                .defineInRange("squidNearbyPopulationCap", 16, 0, Integer.MAX_VALUE);
 
         SQUID_PREVENT_LOVE_HUNT = BUILDER
-                .comment("\n Whether squidPreventLoveRadius stops Squid from hunting altogether rather than just entering love mode.")
-                .define("squidPreventLoveHunt", false);
+                .comment("\n Whether squidPopulationCheckRadius stops Squid from hunting altogether rather than just entering love mode.")
+                .define("squidPopulationPreventsHunt", false);
 
         SQUID_IDS = BUILDER
                 .comment("\n List of Entity IDs - each entry corresponds with the entry of squidFood_itemTags with the same index." +
@@ -376,6 +393,10 @@ public class Config {
                         "\n   If this list is empty and squidFood_squidIDs is not, the tag fisheggs:squid_food will be used by default." +
                         "\n   THIS ONLY APPLIES TO HAND FEEDING SQUID.")
                 .defineListAllowEmpty("squidFood_itemTags", List.of("fisheggs:squid_food"), () -> "", Config::alwaysTrue);
+
+        SQUID_HANDFEED_CHANCE = BUILDER
+                .comment("\n The chance a squid will enter love mode upon being hand-fed a matching food item.")
+                .defineInRange("squidHandfeedChance", 1.0, 0.0, 1.0);
 
         BUILDER.pop();
 
@@ -400,12 +421,12 @@ public class Config {
                 .defineInRange("squidPartnerSearchRange", 16.0, 0.0, 64.0);
 
         SQUID_DIST_BREED = BUILDER
-                .comment("\n The maximum squared distance a fish can breed with their partner")
-                .defineInRange("squidPartnerMateRangeSqr", 1.5, 0.0, 64.0);
+                .comment("\n The maximum distance a fish can breed with their partner")
+                .defineInRange("squidPartnerMateRange", 1.2, 0.0, 64.0);
 
         SQUID_REGEN_TIME = BUILDER
                 .comment("\n Ticks that a squid will be given regeneration after breeding")
-                .defineInRange("squidRegenTime", 100, 0, Integer.MAX_VALUE);
+                .defineInRange("squidRegenTime", 200, 0, Integer.MAX_VALUE);
 
         SQUID_BREED_COOLDOWN_TIME = BUILDER
                 .comment("\n Ticks that a squid will be unable to breed or hunt food after breeding")
@@ -435,17 +456,18 @@ public class Config {
                 .define("axolotlPreyBreedBlacklistIsWhitelist", true);
 
         AXOLOTL_HUNT_BREED_CHANCE = BUILDER
-                .comment("\n The chance an Axolotl will enter breeding mode upon killing a matching prey entity, as defined above")
-                .defineInRange("axolotlBreedChanceAfterHunting", 0.5, 0.0, 1.0);
+                .comment("\n The chance an Axolotl will enter love mode upon killing a matching prey entity, as defined above")
+                .defineInRange("axolotlBreedChanceAfterHunting", 0.4, 0.0, 1.0);
 
         AXOLOTL_PREVENT_LOVE_RADIUS = BUILDER
-                .comment("\n The chance an Axolotl will enter breeding mode upon eating its matching breeding item")
-                .defineInRange("axolotlPreventLoveRadius", 12.0, 0.0, 64.0);
+                .comment("\n If there are more than axolotlNearbyPopulationCap of Axolotls within this radius of blocks," +
+                        "\n   the Axolotl will not enter love mode after a successful hunt of a prey entity.")
+                .defineInRange("axolotlPopulationCheckRadius", 16.0, 0.0, 64.0);
 
         AXOLOTL_PREVENT_LOVE_AMOUNT = BUILDER
-                .comment("\n If there are more than this number of Axolotls within the axolotlPreventLoveRadius blocks, " +
+                .comment("\n If there are more than this number of Axolotls within the axolotlPopulationCheckRadius blocks, " +
                         "\n   the Axolotl will not enter love mode after a successful hunt.")
-                .defineInRange("axolotlPreventLoveLimit", 24, 0, Integer.MAX_VALUE);
+                .defineInRange("axolotlNearbyPopulationCap", 24, 0, Integer.MAX_VALUE);
 
         BUILDER.pop();
 
@@ -511,6 +533,10 @@ public class Config {
         WAND_BIGUSE_RADIUS = BUILDER
                 .comment("\n Radius of effect for the Dev Wand's crouch uses")
                 .defineInRange("wandCrouchUseRadius", 12.0, 0.0, 64.0);
+
+        UNLUCK_DURATION = BUILDER
+                .comment("\n Ticks that the Bad Luck effect will last on an entity if it is unable to breed due to reaching a population cap.  The effect is purely visual.")
+                .defineInRange("badLuckDuration", 400, 0, Integer.MAX_VALUE);
 
         DEBUG_TROPICAL_COLORS = BUILDER
                 .comment("\n Whether Fish Eggs should output the genetic color data of hatching tropical fish to latest.log (for testing)")

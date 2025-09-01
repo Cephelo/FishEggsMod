@@ -1,0 +1,35 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "farmersdelight"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "food",
+  "key": {
+    "E": {
+      "tag": "c:eggs"
+    },
+    "S": {
+      "item": "fisheggs:cooked_squid_eggs"
+    },
+    "T": {
+      "tag": "fisheggs:cooked_squid"
+    },
+    "W": {
+      "tag": "c:foods/pasta"
+    },
+    "B": {
+      "item": "minecraft:bowl"
+    }
+  },
+  "pattern": [
+    "SES",
+    "WTW",
+    "TBT"
+  ],
+  "result": {
+    "id": "fisheggs:calamari_supreme"
+  }
+}

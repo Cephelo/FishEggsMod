@@ -10,7 +10,6 @@ import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import java.util.function.Supplier;
 
 public class FishDataAttachments {
-    // Create the DeferredRegister for attachment types
     private static final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES = DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, FishEggsMod.MODID);
 
     // Serialization via codec
@@ -30,7 +29,6 @@ public class FishDataAttachments {
             "has_target", () -> AttachmentType.builder(() -> false).serialize(Codec.BOOL).build()
     );
 
-    // In your mod constructor, don't forget to register the DeferredRegister to your mod bus:
     public static void register(IEventBus eventBus) {
         ATTACHMENT_TYPES.register(eventBus);
     }
