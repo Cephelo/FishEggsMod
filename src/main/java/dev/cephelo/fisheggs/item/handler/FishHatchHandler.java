@@ -3,18 +3,17 @@ package dev.cephelo.fisheggs.item.handler;
 import dev.cephelo.fisheggs.Config;
 import dev.cephelo.fisheggs.FishEggsMod;
 import dev.cephelo.fisheggs.attachment.FishDataAttachments;
+import dev.cephelo.fisheggs.compat.FishOfThievesCompat;
 import dev.cephelo.fisheggs.item.component.FishEggComponents;
 import dev.cephelo.fisheggs.sound.ModSounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.MobSpawnType;
-import net.minecraft.world.entity.animal.Bucketable;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.animal.TropicalFish;
 import net.minecraft.world.item.DyeColor;
+import net.neoforged.fml.ModList;
 
 import java.util.*;
 
@@ -154,10 +153,13 @@ public class FishHatchHandler {
                     if (!Config.TROPICAL_SINGLE_PATTERN.get())
                         fishPattern = getNewPattern(data.variant1(), data.variant2());
                     fish.setPackedVariant(fishPattern);
-                }
+                } else if (ModList.get().isLoaded("fishofthieves")
+                        && thing instanceof com.stevekung.fishofthieves.entity.ThievesFish fish
+                        && fish instanceof LivingEntity livingEntity) // fishPattern = Math.random() > 0.5 ? data.variant1() : data.variant2();
+                            FishOfThievesCompat.setVariant(livingEntity, data.variant1(), data.variant2());
                 // Prevents despawning
-                if (!Config.HATCHED_CAN_DESPAWN.get() && thing instanceof Bucketable bucketable)
-                    bucketable.setFromBucket(true);
+                if (!Config.HATCHED_CAN_DESPAWN.get() && thing instanceof Mob mob)
+                    mob.setPersistenceRequired();//bucketable.setFromBucket(true);
             }
         }
 

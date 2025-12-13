@@ -2,6 +2,7 @@ package dev.cephelo.fisheggs.entity.ai.goal;
 
 import dev.cephelo.fisheggs.Config;
 import dev.cephelo.fisheggs.attachment.FishDataAttachments;
+import dev.cephelo.fisheggs.compat.FishOfThievesCompat;
 import dev.cephelo.fisheggs.item.FishEggsItemEntity;
 import dev.cephelo.fisheggs.item.ModItems;
 import dev.cephelo.fisheggs.sound.ModSounds;
@@ -10,12 +11,14 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ExperienceOrb;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.animal.AbstractFish;
 import net.minecraft.world.entity.animal.TropicalFish;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
+import net.neoforged.fml.ModList;
 
 import javax.annotation.Nullable;
 import java.util.EnumSet;
@@ -122,11 +125,22 @@ public class FishBreedGoal extends Goal {
         return fish.getData(FishDataAttachments.FISHINLOVE) > 0;
     }
 
+    private static int testForVariant(LivingEntity entity) {
+        if (entity instanceof TropicalFish fish)
+            return fish.getPackedVariant();
+
+        if (ModList.get().isLoaded("fishofthieves") && entity instanceof com.stevekung.fishofthieves.entity.ThievesFish)
+            return FishOfThievesCompat.getOrderFromVariant(entity);
+
+        return 0;
+    }
+
     protected void breed() {
         this.level.addFreshEntity(new FishEggsItemEntity(level, this.animal.getX(), this.animal.getY(), this.animal.getZ(),
                 ModItems.FISH_EGGS.toStack(), 20, this.animal.getType(),
-                 this.animal instanceof TropicalFish fish ? fish.getPackedVariant() : 0,
-                this.partner instanceof TropicalFish fish ? fish.getPackedVariant() : 0));
+                testForVariant(this.animal),
+                testForVariant(this.partner)
+        ));
 
         this.animal.setData(FishDataAttachments.FISHINLOVE, 0);
         this.animal.setData(FishDataAttachments.BREED_COOLDOWN, Config.BREED_COOLDOWN_TIME.get());

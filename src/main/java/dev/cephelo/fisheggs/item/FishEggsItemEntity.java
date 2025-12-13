@@ -44,9 +44,9 @@ public class FishEggsItemEntity extends ItemEntity {
     public static void attemptHatchEggs(ServerLevel serverLevel, FishEggsItemEntity entity) {
         TagKey<Fluid> allowedFluids = TagKey.create(Registries.FLUID, ResourceLocation.parse("fisheggs:allowed_hatch_fluids"));
 
-        if (!Config.FISH_EGGS_NEED_WATER.get() || serverLevel.getFluidState(entity.getOnPos()).is(allowedFluids)) {
+        if (!Config.FISH_EGGS_NEED_WATER.get() || serverLevel.getFluidState(entity.blockPosition()).is(allowedFluids)) {
             for (int i = 0; i < entity.getItem().getCount(); i++)
-                FishHatchHandler.spawnFish(serverLevel, entity.getOnPos().above(),
+                FishHatchHandler.spawnFish(serverLevel, entity.blockPosition(),
                         entity.getItem().get(ModDataComponents.FE_COMP));
         }
     }

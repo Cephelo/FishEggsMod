@@ -1,6 +1,7 @@
 package dev.cephelo.fisheggs.item;
 
 import dev.cephelo.fisheggs.Config;
+import dev.cephelo.fisheggs.compat.FishOfThievesCompat;
 import dev.cephelo.fisheggs.item.component.FishEggComponents;
 import dev.cephelo.fisheggs.item.component.ModDataComponents;
 import dev.cephelo.fisheggs.item.handler.FishHatchHandler;
@@ -22,6 +23,7 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.Fluid;
+import net.neoforged.fml.ModList;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -58,7 +60,7 @@ public class FishEggsItem extends Item {
         BlockPos targetPos = context.getClickedPos().relative(context.getClickedFace(), 1);
 
         if (context.getLevel() instanceof ServerLevel serverLevel && inWater(serverLevel, targetPos)) {
-            context.getPlayer().swing(context.getHand());
+            context.getPlayer().swing(context.getHand(), true);
             FishEggComponents comp = context.getItemInHand().get(ModDataComponents.FE_COMP);
             // handles null from creative inventory
             if (comp == null) comp = new FishEggComponents(EntityType.COD, 0, 0);
@@ -72,7 +74,7 @@ public class FishEggsItem extends Item {
         return super.useOn(context);
     }
 
-    private static MutableComponent variantString(int variant) {
+    private static MutableComponent tropicalVariantString(int variant) {
         String baseColor = "color.minecraft." + TropicalFish.getBaseColor(variant);
         String patternColor = "color.minecraft." + TropicalFish.getPatternColor(variant);
         Component pattern = TropicalFish.getPattern(variant).displayName();
@@ -94,7 +96,11 @@ public class FishEggsItem extends Item {
                 tooltipComponents.add(Component.translatable(comp.type().getDescriptionId()).withStyle(achatformatting));
 
             if (comp.type() == EntityType.TROPICAL_FISH && Config.SHOW_VARIANT_TOOLTIP.get()) {
-                tooltipComponents.add(variantString(comp.variant1()).append(", ").append(variantString(comp.variant2())).withStyle(achatformatting));
+                tooltipComponents.add(tropicalVariantString(comp.variant1()).append(", ").append(tropicalVariantString(comp.variant2())).withStyle(achatformatting));
+            }
+            else if (ModList.get().isLoaded("fishofthieves")
+                    && comp.type().getDescriptionId().contains("fishofthieves")) {
+                tooltipComponents.add(FishOfThievesCompat.FOTVariantString(comp.type(), comp.variant1()).append(", ").append(FishOfThievesCompat.FOTVariantString(comp.type(), comp.variant2())).withStyle(achatformatting));
             }
         }
 

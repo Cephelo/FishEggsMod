@@ -59,7 +59,7 @@ public class SquidEggsItem extends Item {
     public InteractionResult useOn(UseOnContext context) {
         BlockPos targetPos = context.getClickedPos().relative(context.getClickedFace(), 1);
         if (context.getLevel() instanceof ServerLevel serverLevel && inWater(serverLevel, targetPos)) {
-            context.getPlayer().swing(context.getHand());
+            context.getPlayer().swing(context.getHand(), true);
             SquidEggsComponent comp = context.getItemInHand().get(ModDataComponents.SE_COMP);
             // handles null from creative inventory
             if (comp == null) comp = new SquidEggsComponent(EntityType.SQUID);

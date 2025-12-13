@@ -42,7 +42,7 @@ public class WandItem extends Item {
             level.playSound(null, player.blockPosition(), ModSounds.WAND_USE.get(), SoundSource.PLAYERS);
             return InteractionResultHolder.consume(player.getItemInHand(usedHand));
         } else if (player.isCrouching() && player.getLookAngle().y() == 1.0 && player.level() instanceof ServerLevel serverLevel) { // hatch all egg items
-            player.swing(usedHand);
+            player.swing(usedHand, true);
 
             List<? extends Entity> list = serverLevel.getEntities(player, player.getBoundingBox().inflate(Config.WAND_BIGUSE_RADIUS.get()));
             for (Entity entity : list) {
@@ -68,7 +68,7 @@ public class WandItem extends Item {
             if (player.isCrouching()) {
                 List<? extends LivingEntity> list = player.level().getEntitiesOfClass(interactionTarget.getClass(), player.getBoundingBox().inflate(Config.WAND_BIGUSE_RADIUS.get()));
 
-                player.swing(usedHand);
+                player.swing(usedHand, true);
                 for (LivingEntity entity : list) {
                     if (entity.getData(FishDataAttachments.BREED_COOLDOWN.get()) > 0
                             || entity.getData(FishDataAttachments.HUNT_COOLDOWN.get()) > 0) {
@@ -80,7 +80,7 @@ public class WandItem extends Item {
                 return InteractionResult.CONSUME;
             } else if (interactionTarget.getData(FishDataAttachments.BREED_COOLDOWN.get()) > 0
                     || interactionTarget.getData(FishDataAttachments.HUNT_COOLDOWN.get()) > 0) {
-                player.swing(usedHand);
+                player.swing(usedHand, true);
                 removeCooldowns(interactionTarget);
                 player.level().playSound(null, player.blockPosition(), ModSounds.WAND_USE.get(), SoundSource.PLAYERS);
                 return InteractionResult.CONSUME;

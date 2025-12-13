@@ -22,6 +22,10 @@ repositories {
     maven {
         url 'https://www.cursemaven.com'
     }
+
+    flatDir {
+        dir 'libs'
+    }
 }
 
 base {
@@ -137,6 +141,9 @@ dependencies {
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
     implementation "curse.maven:farmers-delight-398521:6917256"
+
+    //implementation "curse.maven:fish-of-thieves-568372:6412252"
+    compileOnly "com.stevekung:fish_of_thieves:mc1.21.1-v21.1.0.0-neoforge"//fish_of_thieves-mc1.21.1-v4.1.0-neoforge.jar
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.

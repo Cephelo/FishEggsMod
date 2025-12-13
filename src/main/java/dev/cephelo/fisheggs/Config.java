@@ -91,7 +91,8 @@ public class Config {
             FISH_SPEEDMOD_CHASE,
             FISH_SPEEDMOD_BREED,
             FISH_HANDFEED_CHANCE,
-            SQUID_HANDFEED_CHANCE;
+            SQUID_HANDFEED_CHANCE,
+            FISHOFTHIEVESCOMPAT_BIOMEMUTATIONCHANCE;
 
     public static final ModConfigSpec.ConfigValue<List<? extends String>>
             FISH_IDS,
@@ -541,6 +542,16 @@ public class Config {
         DEBUG_TROPICAL_COLORS = BUILDER
                 .comment("\n Whether Fish Eggs should output the genetic color data of hatching tropical fish to latest.log (for testing)")
                 .define("debugTropicalColorsToLog", false);
+
+        BUILDER.pop();
+
+
+        // COMPATIBILITY
+        BUILDER.push("Compatibility");
+
+        FISHOFTHIEVESCOMPAT_BIOMEMUTATIONCHANCE = BUILDER
+                .comment("\n FISH OF THIEVES - The chance a Fish of Thieves fish will adopt a random variant from the biome it spawns in.  Otherwise it will choose between the variants of its parents.")
+                .defineInRange("fishofthieves_biomeMutationChance", 0.25, 0.0, 1.0);
 
         BUILDER.pop();
 
